@@ -1,8 +1,5 @@
-import { test } from "./email";
+import { getStudentInfo } from "./sheets";
 
-const spreadsheet = SpreadsheetApp.getActive();
-
-function myFunction() {
-  test("helloooo!");
+function test() {
+  console.log(getStudentInfo());
 }
-myFunction();
