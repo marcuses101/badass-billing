@@ -8,8 +8,11 @@ module.exports = {
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module",
+    project: "./tsconfig.json",
   },
   plugins: ["@typescript-eslint"],
-  rules: {},
-  ignorePatterns: ["Code.js"],
+  rules: {
+    "import/prefer-default-export": "off",
+  },
+  ignorePatterns: ["**/*.js"],
 };
