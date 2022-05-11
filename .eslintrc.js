@@ -13,6 +13,8 @@ module.exports = {
   plugins: ["@typescript-eslint"],
   rules: {
     "import/prefer-default-export": "off",
+    "no-underscore-dangle": "off",
+    "@typescript-eslint/naming-convention": "off",
   },
   ignorePatterns: ["**/*.js"],
 };
