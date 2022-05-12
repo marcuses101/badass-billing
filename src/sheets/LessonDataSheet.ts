@@ -1,4 +1,5 @@
 import { SheetConfig } from "sheetsConfig";
+import { getSheetData_ } from "utils";
 
 export const lessonDataSheetConfig: SheetConfig = {
   title: "Lesson Data",
@@ -6,12 +7,16 @@ export const lessonDataSheetConfig: SheetConfig = {
     "Lesson Number",
     "Date",
     "Minutes",
-    "Students",
+    "Student",
     "Number of Students",
-    "Lesson Cost",
-    "Charge Per Student",
+    "Student Amount",
+    "Total Lesson Amount",
   ],
   setup: (sheet) => {
     sheet.getRange("A2").setFormula("=ProcessLessonLog('Lesson Log'!A2:Z)");
   },
 };
+
+export function getLessonData() {
+  return getSheetData_("Lesson Data");
+}

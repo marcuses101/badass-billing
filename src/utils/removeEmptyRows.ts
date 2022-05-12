@@ -1,3 +1,3 @@
-export function removeEmptyRows(data: any[][]) {
+export function removeEmptyRows_(data: any[][]) {
   return data.filter((row) => row.some((entry) => entry));
 }

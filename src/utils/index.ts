@@ -1,8 +1,9 @@
-export { camelCase } from "./camelCase";
-export { sheetDataToObject } from "./sheetDataToObject";
-export { getSheetData } from "./getSheetData";
-export { removeEmptyRows } from "./removeEmptyRows";
+export { camelCase_ } from "./camelCase";
+export { sheetDataToObjects_ } from "./sheetDataToObject";
+export { getSheetData_ } from "./getSheetData";
+export { removeEmptyRows_ } from "./removeEmptyRows";
+export { getDateValidation_ } from "./getDateValidation";
+export { getStudentValidation_ } from "./getStudentValidation";
+export { getNumberValidation_ } from "./getNumberValidation";
 export { deleteSheets } from "./deleteSheets";
-export { getDateValidation } from "./getDateValidation";
-export { getStudentValidation } from "./getStudentValidation";
-export { getNumberValidation } from "./getNumberValidation";
+export { getConfigValues } from "./getConfigValues";

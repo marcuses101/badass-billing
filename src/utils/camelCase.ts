@@ -7,14 +7,14 @@ const basicCamelRegEx =
 const fourOrMoreConsecutiveCapsRegEx = /([A-Z\u00C0-\u00DC]{4,})/g;
 const allCapsRegEx = /^[A-Z\u00C0-\u00DC]+$/;
 
-function deCap(match: string, endOfWord: boolean) {
+function deCap_(match: string, endOfWord: boolean) {
   const arr = match.split("") as string[];
   const first = arr?.shift()?.toUpperCase();
   const last = endOfWord ? arr?.pop()?.toLowerCase() : arr.pop();
   return first + arr.join("").toLowerCase() + last;
 }
 
-export function camelCase(str: string) {
+export function camelCase_(str: string) {
   const words = str.split(wordSeparatorsRegEx);
   const len = words.length;
   const mappedWords = new Array(len);
@@ -27,7 +27,7 @@ export function camelCase(str: string) {
     const isCamelCase = basicCamelRegEx.test(word) && !allCapsRegEx.test(word);
     if (isCamelCase) {
       word = word.replace(fourOrMoreConsecutiveCapsRegEx, (match, p1, offset) =>
-        deCap(match, word.length - offset - match.length === 0)
+        deCap_(match, word.length - offset - match.length === 0)
       );
     }
     let firstLetter = word[0];

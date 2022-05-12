@@ -1,9 +1,14 @@
 export function deleteSheets() {
-  const { getSheets, deleteSheet, insertSheet } =
+  const defaultSheetName = "Sheet1";
+  const { getSheets, deleteSheet, insertSheet, getSheetByName } =
     SpreadsheetApp.getActiveSpreadsheet();
   const sheets = getSheets();
-  insertSheet("Sheet1");
+  const sheet1 =
+    getSheetByName(defaultSheetName) || insertSheet(defaultSheetName);
   sheets.forEach((sheet) => {
-    deleteSheet(sheet);
+    if (sheet.getName() !== defaultSheetName) {
+      deleteSheet(sheet);
+    }
   });
+  return sheet1;
 }

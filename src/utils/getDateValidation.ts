@@ -1,6 +1,6 @@
-export function getDateValidation(){
+export function getDateValidation_() {
   return SpreadsheetApp.newDataValidation()
-  .setAllowInvalid(false)
-  .requireDate()
-  .build();
+    .setAllowInvalid(false)
+    .requireDate()
+    .build();
 }

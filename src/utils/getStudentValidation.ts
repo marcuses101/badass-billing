@@ -1,4 +1,4 @@
-export function getStudentValidation() {
+export function getStudentValidation_() {
   const fullNameRange = SpreadsheetApp.getActiveSpreadsheet().getRange(
     "'Student Data'!$D2:$D"
   );
