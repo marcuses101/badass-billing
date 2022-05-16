@@ -3,33 +3,6 @@ function populate(sheet, data) {
   data.forEach((row) => sheet.appendRow(row));
 }
 
-// src/sheets/StudentInfoSheet.ts
-function studentInfoFixtures_() {
-  return [
-    ["Marcus", "Connolly", "mnjconnolly@gmail.com"],
-    ["Laurence", "Lessard", "laurencelessard@gmail.com"],
-    ["Mark", "Bardei", "markymark@hotmail.com,karina_muscles@flexing.com"],
-    ["James", "Connolly", "yogoyou@gmail.com"]
-  ];
-}
-var studentInfoSheetConfig = {
-  title: "Student Info",
-  headers: ["First Name", "Last Name", "Email"],
-  fixtures: studentInfoFixtures_()
-};
-
-// src/sheets/StudentDataSheet.ts
-var studentDataSheetConfig = {
-  title: "Student Data",
-  headers: ["First Name", "Last Name", "Email", "Full Name"],
-  setup: (sheet) => {
-    const studentInfoCell = sheet.getRange("A2");
-    studentInfoCell.setFormula("=SORT(ARRAYFORMULA('Student Info'!A2:C),1, TRUE)");
-    const emailCell = sheet.getRange(2, 4);
-    emailCell.setFormula('=ARRAYFORMULA(A2:A&" "&B2:B)');
-  }
-};
-
 // src/utils/camelCase.ts
 var wordSeparatorsRegEx = /[\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]+/;
 var basicCamelRegEx = /^[a-z\u00E0-\u00FCA-Z\u00C0-\u00DC][\d|a-z\u00E0-\u00FCA-Z\u00C0-\u00DC]*$/;
@@ -91,7 +64,7 @@ function getDateValidation_() {
 
 // src/utils/getStudentValidation.ts
 function getStudentValidation_() {
-  const fullNameRange = SpreadsheetApp.getActiveSpreadsheet().getRange("'Student Data'!$D2:$D");
+  const fullNameRange = SpreadsheetApp.getActiveSpreadsheet().getRange("'Student Data'!$A2:$A");
   return SpreadsheetApp.newDataValidation().setAllowInvalid(false).requireValueInRange(fullNameRange, true).build();
 }
 
@@ -119,6 +92,53 @@ function getConfigValues() {
   var _a, _b;
   const configData = (_a = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Config")) == null ? void 0 : _a.getDataRange().getValues();
   return configData && Object.fromEntries((_b = configData == null ? void 0 : configData.slice(1)) == null ? void 0 : _b.map(([key, value]) => [camelCase_(key), value]));
+}
+
+// src/utils/getBooleanValidation.ts
+function getBooleanValidation_() {
+  return SpreadsheetApp.newDataValidation().setAllowInvalid(false).requireCheckbox().build();
+}
+
+// src/sheets/StudentInfoSheet.ts
+function studentInfoFixtures_() {
+  return [
+    ["Marcus", "Connolly", "mnjconnolly@gmail.com", true],
+    ["Laurence", "Lessard", "laurencelessard@gmail.com", true],
+    [
+      "Mark",
+      "Bardei",
+      "markymark@hotmail.com,karina_muscles@flexing.com",
+      false
+    ],
+    ["James", "Connolly", "yogoyou@gmail.com", true]
+  ];
+}
+var studentInfoSheetConfig = {
+  title: "Student Info",
+  headers: ["First Name", "Last Name", "Email", "Is Active"],
+  setup: (sheet) => {
+    const isActiveRange = sheet.getRange("D2:D");
+    isActiveRange.setDataValidation(getBooleanValidation_());
+  },
+  fixtures: studentInfoFixtures_()
+};
+
+// src/sheets/StudentDataSheet.ts
+var studentDataSheetConfig = {
+  title: "Student Data",
+  headers: ["Full Name", "Email"],
+  setup: (sheet) => {
+    sheet.getRange("A2").setFormula(`=processStudentInfo('Student Info'!A2:Z)`);
+  }
+};
+function processStudentInfo(data) {
+  const rows = data.filter((row) => row[0] && row[1] && row[2] && row[3]);
+  const dataRows = rows.map((row) => {
+    const [firstName, lastName, email] = row;
+    const fullName = `${firstName} ${lastName}`;
+    return [fullName, email];
+  }).sort(({ 0: a }, { 0: b }) => a > b ? 1 : -1);
+  return dataRows;
 }
 
 // src/sheets/LessonLogSheet.ts
@@ -152,11 +172,35 @@ var lessonDataSheetConfig = {
     "Total Lesson Amount"
   ],
   setup: (sheet) => {
-    sheet.getRange("A2").setFormula("=ProcessLessonLog('Lesson Log'!A2:Z)");
+    sheet.getRange("A2").setFormula("=ProcessLessonLog('Lesson Log'!A2:Z, HourlyRate)");
   }
 };
 function getLessonData() {
   return getSheetData_("Lesson Data");
+}
+function ProcessLessonLog(data, hourlyRate) {
+  if (!hourlyRate) {
+    throw new Error('Please configure "Hourly Rate" in the Config tab');
+  }
+  const filledRows = data.filter((row) => row.some((entry) => entry));
+  const lessonData = filledRows.flatMap((row, index) => {
+    const [date, minutes, ...students] = row;
+    const lessonNumber = index + 1;
+    const filteredStudents = [...new Set(students.filter((entry) => entry))];
+    const numberOfStudents = filteredStudents.length;
+    const totalLessonAmount = minutes / 60 * hourlyRate;
+    const studentAmount = totalLessonAmount / numberOfStudents;
+    return filteredStudents.map((name) => [
+      lessonNumber,
+      date,
+      minutes,
+      name,
+      numberOfStudents,
+      studentAmount,
+      totalLessonAmount
+    ]);
+  });
+  return lessonData;
 }
 
 // src/sheets/ExtraLogSheet.ts
@@ -177,6 +221,9 @@ function configFixtures_() {
 var configSheetConfig = {
   title: "Config",
   headers: ["Parameter", "Value"],
+  setup: (sheet) => {
+    SpreadsheetApp.getActiveSpreadsheet().setNamedRange("HourlyRate", sheet.getRange("B2"));
+  },
   fixtures: configFixtures_()
 };
 
@@ -199,7 +246,8 @@ var sheets = [
   "Lesson Data",
   "Extra Log",
   "Config",
-  "Payment Log"
+  "Payment Log",
+  "Summary"
 ];
 var sheetConfigs = [
   studentInfoSheetConfig,
@@ -243,42 +291,7 @@ function sendBills() {
   ui.alert("TEST SEND BILLS");
 }
 
-// src/customFormulas/processLessonLog.ts
-function ProcessLessonLog(data) {
-  var _a;
-  const hourlyRate = (_a = getConfigValues()) == null ? void 0 : _a.hourlyRate;
-  if (hourlyRate == null) {
-    throw new Error('Please configure "Hourly Rate" in the Config tab');
-  }
-  const filledRows = data.filter((row) => row.some((entry) => entry));
-  const lessonData = filledRows.flatMap((row, index) => {
-    const [date, minutes, ...students] = row;
-    const lessonNumber = index + 1;
-    const filteredStudents = [...new Set(students.filter((entry) => entry))];
-    const numberOfStudents = filteredStudents.length;
-    const totalLessonAmount = minutes / 60 * hourlyRate;
-    const studentAmount = totalLessonAmount / numberOfStudents;
-    return filteredStudents.map((name) => [
-      lessonNumber,
-      date,
-      minutes,
-      name,
-      numberOfStudents,
-      studentAmount,
-      totalLessonAmount
-    ]);
-  });
-  return lessonData;
-}
-
 // src/index.ts
 function placeholder_() {
-  return [
-    initialize,
-    onOpen,
-    sendBills,
-    deleteSheets,
-    initializeWithData,
-    ProcessLessonLog
-  ];
+  return [initialize, onOpen, sendBills, deleteSheets, initializeWithData];
 }

@@ -25,6 +25,7 @@ const sheets = [
   "Extra Log",
   "Config",
   "Payment Log",
+  "Summary",
 ] as const;
 
 export const sheetConfigs: SheetConfig[] = [

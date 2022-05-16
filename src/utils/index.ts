@@ -7,3 +7,4 @@ export { getStudentValidation_ } from "./getStudentValidation";
 export { getNumberValidation_ } from "./getNumberValidation";
 export { deleteSheets } from "./deleteSheets";
 export { getConfigValues } from "./getConfigValues";
+export { getBooleanValidation_ } from "./getBooleanValidation";
