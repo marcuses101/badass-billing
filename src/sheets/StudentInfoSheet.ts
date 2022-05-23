@@ -14,7 +14,7 @@ function studentInfoFixtures_(): [
       "Mark",
       "Bardei",
       "markymark@hotmail.com,karina_muscles@flexing.com",
-      false,
+      true,
     ],
     ["James", "Connolly", "yogoyou@gmail.com", true],
   ];

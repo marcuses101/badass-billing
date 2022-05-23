@@ -1,6 +1,12 @@
 // src/populate.ts
 function populate(sheet, data) {
-  data.forEach((row) => sheet.appendRow(row));
+  const maxLength = data.reduce((max, row) => row.length > max ? row.length : max, 0);
+  const standardNumberOfColumnsData = data.map((row) => {
+    const newRow = [...row];
+    newRow.length = maxLength;
+    return newRow;
+  });
+  sheet.getRange(2, 1, data.length, maxLength).setValues(standardNumberOfColumnsData);
 }
 
 // src/utils/camelCase.ts
@@ -108,7 +114,7 @@ function studentInfoFixtures_() {
       "Mark",
       "Bardei",
       "markymark@hotmail.com,karina_muscles@flexing.com",
-      false
+      true
     ],
     ["James", "Connolly", "yogoyou@gmail.com", true]
   ];
@@ -124,13 +130,6 @@ var studentInfoSheetConfig = {
 };
 
 // src/sheets/StudentDataSheet.ts
-var studentDataSheetConfig = {
-  title: "Student Data",
-  headers: ["Full Name", "Email"],
-  setup: (sheet) => {
-    sheet.getRange("A2").setFormula(`=processStudentInfo('Student Info'!A2:Z)`);
-  }
-};
 function processStudentInfo(data) {
   const rows = data.filter((row) => row[0] && row[1] && row[2] && row[3]);
   const dataRows = rows.map((row) => {
@@ -140,6 +139,14 @@ function processStudentInfo(data) {
   }).sort(({ 0: a }, { 0: b }) => a > b ? 1 : -1);
   return dataRows;
 }
+var studentDataSheetConfig = {
+  title: "Student Data",
+  headers: ["Full Name", "Email"],
+  setup: (sheet) => {
+    sheet.getRange("A2").setFormula(`=${processStudentInfo.name}('Student Info'!A2:Z)`);
+    SpreadsheetApp.getActiveSpreadsheet().setNamedRange("Students", sheet.getRange("A2:A"));
+  }
+};
 
 // src/sheets/LessonLogSheet.ts
 function lessonLogFixtures_() {
@@ -160,24 +167,6 @@ var lessonLogSheetConfig = {
 };
 
 // src/sheets/LessonDataSheet.ts
-var lessonDataSheetConfig = {
-  title: "Lesson Data",
-  headers: [
-    "Lesson Number",
-    "Date",
-    "Minutes",
-    "Student",
-    "Number of Students",
-    "Student Amount",
-    "Total Lesson Amount"
-  ],
-  setup: (sheet) => {
-    sheet.getRange("A2").setFormula("=ProcessLessonLog('Lesson Log'!A2:Z, HourlyRate)");
-  }
-};
-function getLessonData() {
-  return getSheetData_("Lesson Data");
-}
 function ProcessLessonLog(data, hourlyRate) {
   if (!hourlyRate) {
     throw new Error('Please configure "Hourly Rate" in the Config tab');
@@ -202,8 +191,29 @@ function ProcessLessonLog(data, hourlyRate) {
   });
   return lessonData;
 }
+function getLessonDataSheetObjects_() {
+  return getSheetData_("Lesson Data");
+}
+var lessonDataSheetConfig = {
+  title: "Lesson Data",
+  headers: [
+    "Lesson Id",
+    "Date",
+    "Minutes",
+    "Student Name",
+    "Number of Students",
+    "Lesson Amount Per Student",
+    "Lesson Amount Total"
+  ],
+  setup: (sheet) => {
+    sheet.getRange("A2").setFormula(`=${ProcessLessonLog.name}('Lesson Log'!A2:Z, HourlyRate)`);
+  }
+};
 
 // src/sheets/ExtraLogSheet.ts
+function getExtraLogSheetObjects_() {
+  return getSheetData_("Extra Log");
+}
 var extraLogSheetConfig = {
   title: "Extra Log",
   headers: ["Date", "Student Name", "Amount", "Description"],
@@ -228,6 +238,9 @@ var configSheetConfig = {
 };
 
 // src/sheets/PaymentLogSheet.ts
+function getPaymentLogSheetObjects_() {
+  return getSheetData_("Payment Log");
+}
 var paymentLogSheetConfig = {
   title: "Payment Log",
   headers: ["Date", "Student Name", "Amount", "Description"],
@@ -235,6 +248,78 @@ var paymentLogSheetConfig = {
     sheet.getRange("A2:A").setDataValidation(getDateValidation_());
     sheet.getRange("B2:B").setDataValidation(getStudentValidation_());
     sheet.getRange("C2:C").setDataValidation(getNumberValidation_());
+  }
+};
+
+// src/sheets/SummarySheet.ts
+function getActiveStudents_() {
+  const students = SpreadsheetApp.getActiveSpreadsheet().getRange("Students").getValues().filter((row) => row[0]).map(([fullName]) => fullName);
+  return students;
+}
+function getStudentSummaryMap() {
+  const studentsArray = getActiveStudents_();
+  const studentsMap = studentsArray.reduce((map, studentName) => ({
+    ...map,
+    [studentName]: {
+      name: studentName,
+      lessons: [],
+      extras: [],
+      payments: [],
+      lessonsTotal() {
+        return this.lessons.reduce((acc, current) => acc + current.lessonAmountPerStudent, 0);
+      },
+      extrasTotal() {
+        return this.extras.reduce((acc, current) => acc + current.amount, 0);
+      },
+      subTotal() {
+        return this.lessonsTotal() + this.extrasTotal();
+      },
+      paymentsTotal() {
+        return this.payments.reduce((acc, current) => acc + current.amount, 0);
+      }
+    }
+  }), {});
+  return studentsMap;
+}
+function generateSummary() {
+  const studentMap = getStudentSummaryMap();
+  const lessons = getLessonDataSheetObjects_();
+  lessons.forEach((entry) => {
+    const { studentName } = entry;
+    studentMap[studentName].lessons.push(entry);
+  });
+  const extras = getExtraLogSheetObjects_();
+  extras.forEach((entry) => {
+    const { studentName } = entry;
+    studentMap[studentName].extras.push(entry);
+  });
+  const payments = getPaymentLogSheetObjects_();
+  payments.forEach((entry) => {
+    const { studentName } = entry;
+    studentMap[studentName].payments.push(entry);
+  });
+  return Object.values(studentMap).map((student) => [
+    student.name,
+    student.lessonsTotal(),
+    student.extrasTotal(),
+    student.subTotal(),
+    student.paymentsTotal()
+  ]);
+}
+var summarySheetConfig = {
+  title: "Summary",
+  headers: [
+    "Student",
+    "Lessons Total",
+    "Extras Total",
+    "Sub Total",
+    "Payments Total",
+    "Charges Total",
+    "Previous Balance",
+    "Grand Total"
+  ],
+  setup: (sheet) => {
+    sheet.getRange("A2").setFormula(`=${generateSummary.name}('Lesson Data'!A2:Z, 'Extra Log'!A2:Z, 'Payment Log'!A2:Z,)`);
   }
 };
 
@@ -256,7 +341,8 @@ var sheetConfigs = [
   lessonDataSheetConfig,
   extraLogSheetConfig,
   paymentLogSheetConfig,
-  configSheetConfig
+  configSheetConfig,
+  summarySheetConfig
 ];
 
 // src/init.ts
@@ -266,7 +352,7 @@ function initialize(withData) {
     if (!spreadsheet.getSheetByName(title)) {
       const sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(title);
       sheet.appendRow(headers);
-      sheet.getRange("1:1").setFontWeight("bold");
+      sheet.getRange("1:1").setFontWeight("bold").setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
       setup == null ? void 0 : setup(sheet);
       if (withData && fixtures) {
         populate(sheet, fixtures);
@@ -293,5 +379,12 @@ function sendBills() {
 
 // src/index.ts
 function placeholder_() {
-  return [initialize, onOpen, sendBills, deleteSheets, initializeWithData];
+  return [
+    initialize,
+    onOpen,
+    sendBills,
+    deleteSheets,
+    initializeWithData,
+    generateSummary
+  ];
 }

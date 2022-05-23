@@ -3,7 +3,19 @@ import {
   getDateValidation_,
   getStudentValidation_,
   getNumberValidation_,
+  getSheetData_,
 } from "utils";
+
+export interface IPaymentLogSheetObject {
+  date: Date;
+  studentName: string;
+  amount: number;
+  description: string;
+}
+
+export function getPaymentLogSheetObjects_() {
+  return getSheetData_<IPaymentLogSheetObject>("Payment Log");
+}
 
 export const paymentLogSheetConfig: SheetConfig = {
   title: "Payment Log",

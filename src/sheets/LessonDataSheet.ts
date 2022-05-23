@@ -1,30 +1,25 @@
 import { SheetConfig } from "sheetsConfig";
 import { getSheetData_ } from "utils";
 
-export const lessonDataSheetConfig: SheetConfig = {
-  title: "Lesson Data",
-  headers: [
-    "Lesson Number",
-    "Date",
-    "Minutes",
-    "Student",
-    "Number of Students",
-    "Student Amount",
-    "Total Lesson Amount",
-  ],
-  setup: (sheet) => {
-    sheet
-      .getRange("A2")
-      .setFormula("=ProcessLessonLog('Lesson Log'!A2:Z, HourlyRate)");
-  },
-};
+export type LessonDataEntry = [
+  lessonId: string,
+  date: Date,
+  minutes: string,
+  studentName: string,
+  numberOfStudents: number,
+  lessonAmountPerStudent: number,
+  totalLessonAmount: number
+];
 
-export function getLessonData() {
-  return getSheetData_("Lesson Data");
+export interface ILessonDataEntry {
+  lessonId: string;
+  date: Date;
+  minutes: string;
+  studentName: string;
+  numberOfStudents: number;
+  lessonAmountPerStudent: number;
+  totalLessonAmount: number;
 }
-
-type LessonLogEntry = [date: Date, minutes: number, ...students: string[]];
-
 export function ProcessLessonLog(data: LessonLogEntry[], hourlyRate: number) {
   if (!hourlyRate) {
     throw new Error('Please configure "Hourly Rate" in the Config tab');
@@ -50,3 +45,27 @@ export function ProcessLessonLog(data: LessonLogEntry[], hourlyRate: number) {
   });
   return lessonData;
 }
+
+export function getLessonDataSheetObjects_() {
+  return getSheetData_<ILessonDataEntry>("Lesson Data");
+}
+
+export const lessonDataSheetConfig: SheetConfig = {
+  title: "Lesson Data",
+  headers: [
+    "Lesson Id",
+    "Date",
+    "Minutes",
+    "Student Name",
+    "Number of Students",
+    "Lesson Amount Per Student",
+    "Lesson Amount Total",
+  ],
+  setup: (sheet) => {
+    sheet
+      .getRange("A2")
+      .setFormula(`=${ProcessLessonLog.name}('Lesson Log'!A2:Z, HourlyRate)`);
+  },
+};
+
+type LessonLogEntry = [date: Date, minutes: number, ...students: string[]];
