@@ -8,7 +8,10 @@ export function initialize(withData?: boolean) {
     if (!spreadsheet.getSheetByName(title)) {
       const sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(title);
       sheet.appendRow(headers);
-      sheet.getRange("1:1").setFontWeight("bold");
+      sheet
+        .getRange("1:1")
+        .setFontWeight("bold")
+        .setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP);
       setup?.(sheet);
       if (withData && fixtures) {
         populate(sheet, fixtures);
