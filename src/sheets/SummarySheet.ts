@@ -1,5 +1,9 @@
 import { SheetConfig } from "sheetsConfig";
 import {
+  getChargesSheetEntryObjects_,
+  IChargeSheetEntryObject,
+} from "./ChargesSheet";
+import {
   getExtraLogSheetObjects_,
   IExtraLogSheetObject,
 } from "./ExtraLogSheet";
@@ -30,10 +34,14 @@ function getStudentSummaryMap() {
       lessons: ILessonDataEntry[];
       extras: IExtraLogSheetObject[];
       payments: IPaymentLogSheetObject[];
+      charges: IChargeSheetEntryObject[];
       lessonsTotal: () => number;
       extrasTotal: () => number;
       subTotal: () => number;
       paymentsTotal: () => number;
+      chargesTotal: () => number;
+      previousBalance: () => number;
+      grandTotal: () => number;
     }
   > = studentsArray.reduce(
     (map, studentName) => ({
@@ -43,6 +51,7 @@ function getStudentSummaryMap() {
         lessons: [],
         extras: [],
         payments: [],
+        charges: [],
         lessonsTotal() {
           return this.lessons.reduce(
             (acc, current: ILessonDataEntry) =>
@@ -65,37 +74,61 @@ function getStudentSummaryMap() {
             0
           );
         },
+        chargesTotal() {
+          return this.charges.reduce(
+            (acc: number, current: IChargeSheetEntryObject) =>
+              acc + current.amount,
+            0
+          );
+        },
+        previousBalance() {
+          return this.chargesTotal() - this.paymentsTotal();
+        },
+        grandTotal() {
+          return this.previousBalance() + this.subTotal();
+        },
       },
     }),
     {}
   );
+  const lessons = getLessonDataSheetObjects_();
+
+  lessons.forEach((entry) => {
+    const { studentName } = entry;
+    studentsMap[studentName]?.lessons.push(entry);
+  });
+  const extras = getExtraLogSheetObjects_();
+  extras.forEach((entry) => {
+    const { studentName } = entry;
+    studentsMap[studentName]?.extras.push(entry);
+  });
+
+  const payments = getPaymentLogSheetObjects_();
+  payments.forEach((entry) => {
+    const { studentName } = entry;
+    studentsMap[studentName]?.payments.push(entry);
+  });
+
+  const charges = getChargesSheetEntryObjects_();
+  charges.forEach((entry) => {
+    const { studentName } = entry;
+    studentsMap[studentName]?.charges.push(entry);
+  });
   return studentsMap;
 }
 
 export function generateSummary() {
   const studentMap = getStudentSummaryMap();
-  const lessons = getLessonDataSheetObjects_();
 
-  lessons.forEach((entry) => {
-    const { studentName } = entry;
-    studentMap[studentName].lessons.push(entry);
-  });
-  const extras = getExtraLogSheetObjects_();
-  extras.forEach((entry) => {
-    const { studentName } = entry;
-    studentMap[studentName].extras.push(entry);
-  });
-  const payments = getPaymentLogSheetObjects_();
-  payments.forEach((entry) => {
-    const { studentName } = entry;
-    studentMap[studentName].payments.push(entry);
-  });
   return Object.values(studentMap).map((student) => [
     student.name,
     student.lessonsTotal(),
     student.extrasTotal(),
     student.subTotal(),
     student.paymentsTotal(),
+    student.chargesTotal(),
+    student.previousBalance(),
+    student.grandTotal(),
   ]);
 }
 
@@ -118,4 +151,5 @@ export const summarySheetConfig: SheetConfig = {
         `=${generateSummary.name}('Lesson Data'!A2:Z, 'Extra Log'!A2:Z, 'Payment Log'!A2:Z,)`
       );
   },
+  alternateColors: true,
 };

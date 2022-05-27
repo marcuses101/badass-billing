@@ -28,4 +28,5 @@ export const studentInfoSheetConfig: SheetConfig = {
     isActiveRange.setDataValidation(getBooleanValidation_());
   },
   fixtures: studentInfoFixtures_(),
+  alternateColors: true,
 };

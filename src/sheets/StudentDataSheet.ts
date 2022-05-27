@@ -32,4 +32,5 @@ export const studentDataSheetConfig: SheetConfig = {
       sheet.getRange("A2:A")
     );
   },
+  hidden: true,
 };

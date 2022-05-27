@@ -25,4 +25,6 @@ export const lessonLogSheetConfig: SheetConfig = {
     sheet.getRange("C2:Z").setDataValidation(getStudentValidation_());
   },
   fixtures: lessonLogFixtures_(),
+  alternateColors: true,
+  removeUnusedColumns: false,
 };

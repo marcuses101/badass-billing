@@ -30,16 +30,16 @@ export function ProcessLessonLog(data: LessonLogEntry[], hourlyRate: number) {
     const lessonNumber = index + 1;
     const filteredStudents = [...new Set(students.filter((entry) => entry))];
     const numberOfStudents = filteredStudents.length;
-    // TODO decide rounding strategy
     const totalLessonAmount = (minutes / 60) * hourlyRate;
-    const studentAmount = totalLessonAmount / numberOfStudents;
+    // TODO decide rounding strategy
+    const studentAmount = Math.ceil(totalLessonAmount / numberOfStudents);
     return filteredStudents.map((name) => [
       lessonNumber,
       date,
       minutes,
       name,
       numberOfStudents,
-      studentAmount,
+      studentAmount * numberOfStudents, // Total lesson cost based on the rounded up charge per student
       totalLessonAmount,
     ]);
   });
@@ -66,6 +66,7 @@ export const lessonDataSheetConfig: SheetConfig = {
       .getRange("A2")
       .setFormula(`=${ProcessLessonLog.name}('Lesson Log'!A2:Z, HourlyRate)`);
   },
+  hidden: true,
 };
 
 type LessonLogEntry = [date: Date, minutes: number, ...students: string[]];

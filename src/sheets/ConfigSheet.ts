@@ -14,4 +14,6 @@ export const configSheetConfig: SheetConfig = {
     );
   },
   fixtures: configFixtures_(),
+  alternateColors: true,
+  hidden: true,
 };

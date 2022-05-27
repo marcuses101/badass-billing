@@ -25,4 +25,5 @@ export const extraLogSheetConfig: SheetConfig = {
     sheet.getRange("B2:B").setDataValidation(getStudentValidation_());
     sheet.getRange("C2:C").setDataValidation(getNumberValidation_());
   },
+  alternateColors: true,
 };
