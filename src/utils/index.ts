@@ -5,5 +5,5 @@ export { removeEmptyRows_ } from "./removeEmptyRows";
 export { getDateValidation_ } from "./getDateValidation";
 export { getStudentValidation_ } from "./getStudentValidation";
 export { getNumberValidation_ } from "./getNumberValidation";
-export { getConfigValues } from "./getConfigValues";
+export { getConfigValues_ } from "./getConfigValues";
 export { getBooleanValidation_ } from "./getBooleanValidation";

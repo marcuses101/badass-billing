@@ -1,5 +1,5 @@
 import { SheetConfig } from "sheetsConfig";
-import { getSheetData_ } from "utils";
+import { getConfigValues_, getSheetData_ } from "utils";
 
 export type LessonDataEntry = [
   lessonId: string,
@@ -20,9 +20,20 @@ export interface ILessonDataEntry {
   lessonAmountPerStudent: number;
   totalLessonAmount: number;
 }
-export function ProcessLessonLog(data: LessonLogEntry[], hourlyRate: number) {
-  if (!hourlyRate) {
-    throw new Error('Please configure "Hourly Rate" in the Config tab');
+export function ProcessLessonLog(
+  data: LessonLogEntry[],
+  configData: [key: string, value: string | number][]
+) {
+  const config = getConfigValues_(configData);
+  if (!config) {
+    throw new Error("Error getting config values");
+  }
+  const { groupRate, soloRate } = config;
+
+  if (!groupRate || !soloRate) {
+    throw new Error(
+      'Please configure "Solo Rate" and "Group Rate" in the Config tab'
+    );
   }
   const filledRows = data.filter((row) => row.some((entry) => entry));
   const lessonData = filledRows.flatMap((row, index) => {
@@ -30,16 +41,19 @@ export function ProcessLessonLog(data: LessonLogEntry[], hourlyRate: number) {
     const lessonNumber = index + 1;
     const filteredStudents = [...new Set(students.filter((entry) => entry))];
     const numberOfStudents = filteredStudents.length;
-    const totalLessonAmount = (minutes / 60) * hourlyRate;
+    if (!numberOfStudents) return [];
+    let totalLessonAmount =
+      (minutes / 60) * (numberOfStudents === 1 ? soloRate : groupRate);
     // TODO decide rounding strategy
     const studentAmount = Math.ceil(totalLessonAmount / numberOfStudents);
+    totalLessonAmount = studentAmount * numberOfStudents;
     return filteredStudents.map((name) => [
       lessonNumber,
       date,
       minutes,
       name,
       numberOfStudents,
-      studentAmount * numberOfStudents, // Total lesson cost based on the rounded up charge per student
+      studentAmount, // Total lesson cost based on the rounded up charge per student
       totalLessonAmount,
     ]);
   });
@@ -64,9 +78,10 @@ export const lessonDataSheetConfig: SheetConfig = {
   setup: (sheet) => {
     sheet
       .getRange("A2")
-      .setFormula(`=${ProcessLessonLog.name}('Lesson Log'!A2:Z, HourlyRate)`);
+      .setFormula(`=${ProcessLessonLog.name}('Lesson Log'!A2:Z, Config!A1:Z)`);
   },
   hidden: true,
+  alternateColors: true,
 };
 
 type LessonLogEntry = [date: Date, minutes: number, ...students: string[]];

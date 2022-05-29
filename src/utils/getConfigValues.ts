@@ -1,14 +1,20 @@
 import { camelCase_ } from "./camelCase";
 
 type ConfigValues = {
-  hourlyRate: number;
+  soloRate: number;
+  groupRate: number;
+  exportId: string;
 };
 
-export function getConfigValues() {
-  const configData = SpreadsheetApp.getActiveSpreadsheet()
-    .getSheetByName("Config")
-    ?.getDataRange()
-    .getValues();
+export function getConfigValues_(
+  data?: [key: string, value: string | number][]
+) {
+  const configData =
+    data?.filter((row) => row[0]) ||
+    SpreadsheetApp.getActiveSpreadsheet()
+      .getSheetByName("Config")
+      ?.getDataRange()
+      .getValues();
   return (
     configData &&
     (Object.fromEntries(
