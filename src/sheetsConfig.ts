@@ -12,7 +12,7 @@ import { summarySheetConfig } from "sheets/SummarySheet";
 export type SheetName = typeof sheets[number];
 
 export interface SheetConfig {
-  title: SheetName;
+  name: SheetName;
   headers: string[];
   setup?: (sheet: GoogleAppsScript.Spreadsheet.Sheet) => void;
   fixtures?: any[][];
@@ -31,6 +31,7 @@ export const sheets = [
   "Bill",
   "Student Data",
   "Lesson Data",
+  "Email Queue",
   "Charges",
   "Config",
 ] as const;

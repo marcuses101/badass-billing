@@ -17,7 +17,7 @@ function lessonLogFixtures_(): [
 }
 
 export const lessonLogSheetConfig: SheetConfig = {
-  title: "Lesson Log",
+  name: "Lesson Log",
   headers: ["Date", "Minutes", "Students"],
   setup: (sheet) => {
     sheet.getRange("A2:A").setDataValidation(getDateValidation_());

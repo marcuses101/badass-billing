@@ -14,7 +14,7 @@ export type LessonDataEntry = [
 export interface ILessonDataEntry {
   lessonId: string;
   date: Date;
-  minutes: string;
+  minutes: number;
   studentName: string;
   numberOfStudents: number;
   lessonAmountPerStudent: number;
@@ -65,7 +65,7 @@ export function getLessonDataSheetObjects_() {
 }
 
 export const lessonDataSheetConfig: SheetConfig = {
-  title: "Lesson Data",
+  name: "Lesson Data",
   headers: [
     "Lesson Id",
     "Date",

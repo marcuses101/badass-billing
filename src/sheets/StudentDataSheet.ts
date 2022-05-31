@@ -21,7 +21,7 @@ export function processStudentInfo(data: StudentInfoEntry[]) {
 }
 
 export const studentDataSheetConfig: SheetConfig = {
-  title: "Student Data",
+  name: "Student Data",
   headers: ["Full Name", "Email"],
   setup: (sheet) => {
     sheet

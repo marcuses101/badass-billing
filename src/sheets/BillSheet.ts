@@ -30,8 +30,8 @@ export const billSheetConfig: SheetConfig = {
   title: "Bill",
   headers: ["Student Name"],
   setup: (sheet) => {
-    sheet.getRange("A2").setDataValidation(getStudentValidation_());
-    sheet.getRange("A3").setFormula(`=${generateBill.name}(A2)`);
+    sheet.getRange("B2").setDataValidation(getStudentValidation_());
+    sheet.getRange("A3").setFormula(`=${generateBill.name}(B2)`);
   },
   alternateColors: false,
   hidden: false,

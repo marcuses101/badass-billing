@@ -18,7 +18,7 @@ export function getChargesSheetEntryObjects_() {
 }
 
 export const chargesSheetConfig: SheetConfig = {
-  title: "Charges",
+  name: "Charges",
   headers: ["Date", "Student Name", "Amount"],
   setup: (sheet) => {
     sheet.getRange("A2:A").setDataValidation(getDateValidation_());

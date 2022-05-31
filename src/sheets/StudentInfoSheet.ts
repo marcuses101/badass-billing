@@ -21,7 +21,7 @@ function studentInfoFixtures_(): [
 }
 
 export const studentInfoSheetConfig: SheetConfig = {
-  title: "Student Info",
+  name: "Student Info",
   headers: ["First Name", "Last Name", "Email", "Is Active"],
   setup: (sheet) => {
     const isActiveRange = sheet.getRange("D2:D");

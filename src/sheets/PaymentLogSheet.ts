@@ -18,7 +18,7 @@ export function getPaymentLogSheetObjects_() {
 }
 
 export const paymentLogSheetConfig: SheetConfig = {
-  title: "Payment Log",
+  name: "Payment Log",
   headers: ["Date", "Student Name", "Amount", "Description"],
   setup: (sheet) => {
     sheet.getRange("A2:A").setDataValidation(getDateValidation_());

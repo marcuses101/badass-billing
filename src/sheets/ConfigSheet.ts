@@ -1,7 +1,7 @@
 import { SheetConfig } from "sheetsConfig";
 
 export const configSheetConfig: SheetConfig = {
-  title: "Config",
+  name: "Config",
   headers: ["Parameter", "Value"],
   setup: (sheet) => {
     const ui = SpreadsheetApp.getUi();

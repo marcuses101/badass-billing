@@ -18,7 +18,7 @@ export function getExtraLogSheetObjects_() {
 }
 
 export const extraLogSheetConfig: SheetConfig = {
-  title: "Extra Log",
+  name: "Extra Log",
   headers: ["Date", "Student Name", "Amount", "Description"],
   setup: (sheet) => {
     sheet.getRange("A2:A").setDataValidation(getDateValidation_());
