@@ -2,14 +2,28 @@ import { SheetConfig } from "sheetsConfig";
 import { getStudentValidation_ } from "utils";
 import { getStudentSummaryMap } from "utils/getStudentSummaryMap";
 
+function getLessonDescription_(minutes: number, numberOfStudents: number) {
+  return numberOfStudents > 1
+    ? `${minutes} minute group lesson (${numberOfStudents} students)`
+    : `${minutes} minute lesson`;
+}
+
 export function generateBill(studentName: string) {
   if (!studentName) return null;
   const student = getStudentSummaryMap()[studentName];
-  const lessons = student.lessons.map(({ date, lessonAmountPerStudent }) => [
-    date,
-    lessonAmountPerStudent,
-  ]);
-  const extras = student.extras.map(({ date, amount }) => [date, amount]);
+  const sortedLessonsAndExtraEntries = [...student.lessons, ...student.extras]
+    .sort((a, b) => a.date.getTime() - b.date.getTime())
+    .map((entry) => {
+      if ("lessonAmountPerStudent" in entry) {
+        const { date, minutes, numberOfStudents, lessonAmountPerStudent } =
+          entry;
+        const description = getLessonDescription_(minutes, numberOfStudents);
+        return [date, description, lessonAmountPerStudent];
+      }
+      const { date, description, amount } = entry;
+      return [date, description, amount];
+    });
+
   const returnArray = [
     [],
     ["Name", student.name],
@@ -17,21 +31,18 @@ export function generateBill(studentName: string) {
     ["Previous Balance", student.previousBalance()],
     ["Grand Total", student.grandTotal()],
     [],
-    ["Details"],
-    ["Lessons"],
-    ...lessons,
-    ["Extras"],
-    ...extras,
+    ["Date", "Description", "Amount"],
+    ...sortedLessonsAndExtraEntries,
   ];
   return returnArray;
 }
 
 export const billSheetConfig: SheetConfig = {
-  title: "Bill",
+  name: "Bill",
   headers: ["Student Name"],
   setup: (sheet) => {
-    sheet.getRange("B2").setDataValidation(getStudentValidation_());
-    sheet.getRange("A3").setFormula(`=${generateBill.name}(B2)`);
+    sheet.getRange("B1").setDataValidation(getStudentValidation_());
+    sheet.getRange("A3").setFormula(`=${generateBill.name}(B1)`);
   },
   alternateColors: false,
   hidden: false,

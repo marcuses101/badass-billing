@@ -1,6 +1,7 @@
 import { billSheetConfig } from "sheets/BillSheet";
 import { chargesSheetConfig } from "sheets/ChargesSheet";
 import { configSheetConfig } from "sheets/ConfigSheet";
+import { emailQueueSheetConfig } from "sheets/EmailQueueSheet";
 import { extraLogSheetConfig } from "sheets/ExtraLogSheet";
 import { lessonDataSheetConfig } from "sheets/LessonDataSheet";
 import { lessonLogSheetConfig } from "sheets/LessonLogSheet";
@@ -47,4 +48,5 @@ export const sheetConfigs: SheetConfig[] = [
   paymentLogSheetConfig,
   chargesSheetConfig,
   summarySheetConfig,
+  emailQueueSheetConfig,
 ];

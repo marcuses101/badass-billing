@@ -7,7 +7,7 @@ export function initialize(withData?: boolean) {
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
     sheetConfigs.forEach(
       ({
-        title,
+        name: title,
         headers,
         setup,
         fixtures,
@@ -54,7 +54,7 @@ export function initialize(withData?: boolean) {
         sheetPosition += 1;
       }
     });
-    sheetConfigs.forEach(({ title, hidden }) => {
+    sheetConfigs.forEach(({ name: title, hidden }) => {
       const currentSheet = spreadsheet.getSheetByName(title);
       if (currentSheet && hidden) {
         currentSheet.hideSheet();

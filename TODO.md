@@ -1,11 +1,10 @@
 # TODO
 
-- **Config** Sheet _key/value_?
 - Produce Bill
+- Format Bill
 - Email Queue
   - Properties Service?
   - Verify Email addresses (or highlight invalid email)
-- Protect Sheets
 
 ## Notes
 

@@ -17,6 +17,14 @@ export function getExtraLogSheetObjects_() {
   return getSheetData_<IExtraLogSheetObject>("Extra Log");
 }
 
+function getExtraSheetFixtures_() {
+  return [
+    ["2022-05-01", "Marcus Connolly", 45, "Competition Fee"],
+    ["2022-05-01", "Laurence Lessard", 45, "Competition Fee"],
+    ["2022-05-01", "James Connolly", 45, "Test Fee"],
+  ];
+}
+
 export const extraLogSheetConfig: SheetConfig = {
   name: "Extra Log",
   headers: ["Date", "Student Name", "Amount", "Description"],
@@ -26,4 +34,6 @@ export const extraLogSheetConfig: SheetConfig = {
     sheet.getRange("C2:C").setDataValidation(getNumberValidation_());
   },
   alternateColors: true,
+  fixtures: getExtraSheetFixtures_(),
+  removeUnusedColumns: true,
 };

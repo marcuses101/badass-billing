@@ -17,7 +17,7 @@ export function generateSummary() {
 }
 
 export const summarySheetConfig: SheetConfig = {
-  title: "Summary",
+  name: "Summary",
   headers: [
     "Student",
     "Lessons Total",
