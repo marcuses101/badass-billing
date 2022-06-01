@@ -1,10 +1,15 @@
 # TODO
 
-- Produce Bill
-- Format Bill
+- Taxes?
+  - BC Sales tax rate 7%
+- Income tracking
 - Email Queue
   - Properties Service?
   - Verify Email addresses (or highlight invalid email)
+  - timed trigger to send queued email
+  - email template
+  - generate pdf
+  - additional message in email
 
 ## Notes
 

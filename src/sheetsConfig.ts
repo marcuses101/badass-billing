@@ -25,8 +25,8 @@ export interface SheetConfig {
 // used for sheet order as well as typings
 export const sheets = [
   "Lesson Log",
-  "Payment Log",
   "Extra Log",
+  "Payment Log",
   "Student Info",
   "Summary",
   "Bill",

@@ -1,17 +1,14 @@
+import { equalizeTwoDimensionalArray_ } from "utils";
+
 export function populate(
   sheet: GoogleAppsScript.Spreadsheet.Sheet,
   data: any[][]
 ) {
-  const maxLength = data.reduce(
-    (max, row) => (row.length > max ? row.length : max),
-    0
-  );
-  const standardNumberOfColumnsData = data.map((row) => {
-    const newRow = [...row];
-    newRow.length = maxLength;
-    return newRow;
-  });
+  const equalRowLengthData = equalizeTwoDimensionalArray_(data);
+  const numberOfRows = equalRowLengthData?.length;
+  const numberOfColumns = equalRowLengthData[0]?.length;
+  if (!numberOfRows || !numberOfColumns) return;
   sheet
-    .getRange(2, 1, data.length, maxLength)
-    .setValues(standardNumberOfColumnsData);
+    .getRange(2, 1, numberOfRows, numberOfColumns)
+    .setValues(equalizeTwoDimensionalArray_(data));
 }

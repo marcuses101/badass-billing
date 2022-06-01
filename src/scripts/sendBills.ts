@@ -41,6 +41,8 @@ export function populateEmailQueue() {
     .setValues(entries);
 }
 
+export function generatePDFs() {}
+
 export function sendBills() {
   populateEmailQueue();
   clearLogSheets_();

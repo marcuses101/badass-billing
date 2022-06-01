@@ -16,25 +16,27 @@ import {
 } from "../sheets/PaymentLogSheet";
 import { getActiveStudents_ } from "./getActiveStudents";
 
+export type StudentSummaryMap = Record<
+  string,
+  {
+    name: string;
+    lessons: ILessonDataEntry[];
+    extras: IExtraLogSheetObject[];
+    payments: IPaymentLogSheetObject[];
+    charges: IChargeSheetEntryObject[];
+    lessonsTotal: () => number;
+    extrasTotal: () => number;
+    subTotal: () => number;
+    paymentsTotal: () => number;
+    chargesTotal: () => number;
+    previousBalance: () => number;
+    grandTotal: () => number;
+  }
+>;
+
 export function getStudentSummaryMap() {
   const studentsArray: string[] = getActiveStudents_();
-  const studentsMap: Record<
-    string,
-    {
-      name: string;
-      lessons: ILessonDataEntry[];
-      extras: IExtraLogSheetObject[];
-      payments: IPaymentLogSheetObject[];
-      charges: IChargeSheetEntryObject[];
-      lessonsTotal: () => number;
-      extrasTotal: () => number;
-      subTotal: () => number;
-      paymentsTotal: () => number;
-      chargesTotal: () => number;
-      previousBalance: () => number;
-      grandTotal: () => number;
-    }
-  > = studentsArray.reduce(
+  const studentsMap: StudentSummaryMap = studentsArray.reduce(
     (map, studentName) => ({
       ...map,
       [studentName]: {

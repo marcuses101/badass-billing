@@ -7,3 +7,5 @@ export { getStudentValidation_ } from "./getStudentValidation";
 export { getNumberValidation_ } from "./getNumberValidation";
 export { getConfigValues_ } from "./getConfigValues";
 export { getBooleanValidation_ } from "./getBooleanValidation";
+export { equalizeTwoDimensionalArray_ } from "./equalizeTwoDimensionalArray";
+export { generateBillArray_ } from "./generateBillArray";
