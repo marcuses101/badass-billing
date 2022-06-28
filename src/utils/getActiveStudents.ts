@@ -1,8 +1,9 @@
+import { StudentInfoObject } from "sheets/StudentInfoSheet";
+import { getSheetData_ } from "./getSheetData";
+
 export function getActiveStudents_() {
-  const students = SpreadsheetApp.getActiveSpreadsheet()
-    .getRange("Students")
-    .getValues()
-    .filter((row) => row[0])
-    .map(([fullName]) => fullName);
-  return students;
+  const data = getSheetData_<StudentInfoObject>("Student Info");
+  return data
+    .filter(({ isActive }) => isActive)
+    .map(({ fullName }) => fullName);
 }

@@ -6,7 +6,6 @@ import { extraLogSheetConfig } from "sheets/ExtraLogSheet";
 import { lessonDataSheetConfig } from "sheets/LessonDataSheet";
 import { lessonLogSheetConfig } from "sheets/LessonLogSheet";
 import { paymentLogSheetConfig } from "sheets/PaymentLogSheet";
-import { studentDataSheetConfig } from "sheets/StudentDataSheet";
 import { studentInfoSheetConfig } from "sheets/StudentInfoSheet";
 import { summarySheetConfig } from "sheets/SummarySheet";
 
@@ -30,7 +29,6 @@ export const sheets = [
   "Student Info",
   "Summary",
   "Bill",
-  "Student Data",
   "Lesson Data",
   "Email Queue",
   "Charges",
@@ -40,7 +38,6 @@ export const sheets = [
 export const sheetConfigs: SheetConfig[] = [
   configSheetConfig,
   studentInfoSheetConfig,
-  studentDataSheetConfig,
   lessonLogSheetConfig,
   lessonDataSheetConfig,
   extraLogSheetConfig,

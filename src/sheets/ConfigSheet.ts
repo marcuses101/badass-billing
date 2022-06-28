@@ -1,4 +1,5 @@
 import { SheetConfig } from "sheetsConfig";
+import { equalizeTwoDimensionalArray_ } from "utils";
 
 export const configSheetConfig: SheetConfig = {
   name: "Config",
@@ -37,11 +38,13 @@ export const configSheetConfig: SheetConfig = {
       );
     }
 
-    const configData = [
+    const configData = equalizeTwoDimensionalArray_([
       ["Solo Rate", soloRate],
       ["Group Rate", groupRate],
       ["Export Id", exportSpreadsheetId],
-    ];
+      ["Billing Name"],
+      ["Billing Address"],
+    ]);
 
     sheet.getRange(2, 1, configData.length, 2).setValues(configData);
   },
