@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc --noEmit && node esbuild.config.js",
-    "deploy": "npm run build && clasp push"
+    "deploy": "npm run build && clasp push",
+    "push": "npm run deploy"
   },
   "author": "",
   "license": "ISC",
