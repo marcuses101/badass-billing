@@ -15,27 +15,30 @@ import {
   IPaymentLogSheetObject,
 } from "../sheets/PaymentLogSheet";
 import { getActiveStudents_ } from "./getActiveStudents";
+import { getConfigValues_ } from "./getConfigValues";
+import { roundToTwoDecimalPlaces } from "./roundToTwoDecimalPlaces";
 
-export type StudentSummaryMap = Record<
-  string,
-  {
-    name: string;
-    lessons: ILessonDataEntry[];
-    extras: IExtraLogSheetObject[];
-    payments: IPaymentLogSheetObject[];
-    charges: IChargeSheetEntryObject[];
-    lessonsTotal: () => number;
-    extrasTotal: () => number;
-    subTotal: () => number;
-    paymentsTotal: () => number;
-    chargesTotal: () => number;
-    previousBalance: () => number;
-    grandTotal: () => number;
-  }
->;
+export type StudentSummaryEntry = {
+  name: string;
+  lessons: ILessonDataEntry[];
+  extras: IExtraLogSheetObject[];
+  payments: IPaymentLogSheetObject[];
+  charges: IChargeSheetEntryObject[];
+  taxes: () => number;
+  lessonsTotal: () => number;
+  extrasTotal: () => number;
+  subTotal: () => number;
+  paymentsTotal: () => number;
+  chargesTotal: () => number;
+  previousBalance: () => number;
+  grandTotal: () => number;
+};
+
+export type StudentSummaryMap = Record<string, StudentSummaryEntry>;
 
 export function getStudentSummaryMap() {
   const studentsArray: string[] = getActiveStudents_();
+  const { taxRate } = getConfigValues_();
   const studentsMap: StudentSummaryMap = studentsArray.reduce(
     (map, studentName) => ({
       ...map,
@@ -73,6 +76,9 @@ export function getStudentSummaryMap() {
               acc + current.amount,
             0
           );
+        },
+        taxes() {
+          return roundToTwoDecimalPlaces(this.subTotal() * taxRate);
         },
         previousBalance() {
           return this.chargesTotal() - this.paymentsTotal();

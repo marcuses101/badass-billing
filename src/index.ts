@@ -1,6 +1,6 @@
 import { initialize, initializeWithData } from "scripts/init";
 import { onOpen } from "ui";
-import { sendBills } from "scripts/sendBills";
+import { generatePDFs, sendBills } from "scripts/sendBills";
 import { deleteSheets } from "scripts/deleteSheets";
 import { populateExportSheet } from "scripts/populateExportSheet";
 import { getPDF } from "scripts/getPDF";
@@ -17,5 +17,6 @@ function placeholder_() {
     sendBills,
     populateExportSheet,
     getPDF,
+    generatePDFs,
   ];
 }

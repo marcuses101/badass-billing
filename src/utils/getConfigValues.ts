@@ -3,7 +3,9 @@ import { camelCase_ } from "./camelCase";
 type ConfigValues = {
   soloRate: number;
   groupRate: number;
+  taxRate: number;
   exportId: string;
+  billsFolderId: string;
 };
 
 export function getConfigValues_(
@@ -15,10 +17,8 @@ export function getConfigValues_(
       .getSheetByName("Config")
       ?.getDataRange()
       .getValues();
-  return (
-    configData &&
-    (Object.fromEntries(
-      configData?.slice(1)?.map(([key, value]) => [camelCase_(key), value])
-    ) as ConfigValues)
-  );
+  if (!configData) throw new Error("cannot get config data");
+  return Object.fromEntries(
+    configData?.slice(1)?.map(([key, value]) => [camelCase_(key), value])
+  ) as ConfigValues;
 }

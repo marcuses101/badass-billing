@@ -1,7 +1,9 @@
 # TODO
 
+## Essentials
+
 - Taxes?
-  - BC Sales tax rate 7%
+  - BC Sales tax rate GST 5%
 - Income tracking
 - Email Queue
   - Properties Service?
@@ -10,6 +12,10 @@
   - email template
   - generate pdf
   - additional message in email
+
+## Nice to have
+
+- Optimize calculations
 
 ## Notes
 

@@ -2,6 +2,10 @@ import { populate } from "populate";
 import { sheetConfigs, sheets } from "sheetsConfig";
 import { deleteSheets } from "./deleteSheets";
 
+/**
+ * Sets up the various sheets and optionally populates them with data.
+ * @param withData If true, will initialize with data. If false, will initialize without data.
+ */
 export function initialize(withData?: boolean) {
   try {
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
