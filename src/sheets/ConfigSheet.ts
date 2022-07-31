@@ -71,7 +71,7 @@ export const configSheetConfig: SheetConfig = {
     let billsFolderId =
       PropertiesService.getUserProperties().getProperty(BILLS_FOLDER_ID_KEY);
     if (!billsFolderId) {
-      billsFolderId = DriveApp.createFolder("Bill PDFs").getId();
+      billsFolderId = DriveApp.createFolder("Badass Billing PDFs").getId();
       PropertiesService.getUserProperties().setProperty(
         BILLS_FOLDER_ID_KEY,
         billsFolderId

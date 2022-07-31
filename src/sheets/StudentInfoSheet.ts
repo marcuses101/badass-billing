@@ -65,7 +65,7 @@ export const studentInfoSheetConfig: SheetConfig = {
     "isActive",
   ],
   setup: (sheet) => {
-    const isActiveRange = sheet.getRange("E2:E");
+    const isActiveRange = sheet.getRange("F2:F");
     isActiveRange.setDataValidation(getBooleanValidation_());
   },
   fixtures: studentInfoFixtures_(),

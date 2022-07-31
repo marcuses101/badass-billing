@@ -14,10 +14,11 @@ export const activeStudentsSheetConfig: SheetConfig = {
   name: "Active Students",
   headers: ["Full Name", "Parent Name", "Email", "Telephone", "Address"],
   setup: (sheet) => {
+    // I'm not sure about using built in formulas for this... seems fragile
     sheet
       .getRange("A2")
       .setFormula(
-        `=IFERROR(FILTER('${studentInfoSheetConfig.name}'!A2:D,'Student Info'!E2:E = TRUE),"")`
+        `=IFERROR(FILTER('${studentInfoSheetConfig.name}'!A2:E,'Student Info'!F2:F = TRUE),"")`
       );
   },
   hidden: true,
