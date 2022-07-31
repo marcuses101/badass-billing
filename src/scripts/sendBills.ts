@@ -1,3 +1,4 @@
+import { defaultEmailMessage, defaultEmailSubject } from "appConfig";
 import {
   appendChargesSheetRows_,
   IChargeSheetEntryObject,
@@ -10,8 +11,10 @@ import {
 } from "sheets/EmailQueueSheet";
 // import { extraLogSheetConfig } from "sheets/ExtraLogSheet";
 // import { lessonLogSheetConfig } from "sheets/LessonLogSheet";
-import { useInvoiceId_ } from "utils";
+import { mustache, useInvoiceId_ } from "utils";
 import { buildBillArray_ } from "utils/generateBillArray";
+import { getDateFormatter_ } from "utils/getDateFormatter";
+import { getMoneyFormatter_ } from "utils/getMoneyFormatter";
 import { getStudentSummaryMap_ } from "utils/getStudentSummaryMap";
 import { setBillSheetConditionalFormatting_ } from "utils/setBillSheetConditionalFormatting";
 
@@ -90,10 +93,58 @@ export function generatePDFs() {
   });
   appendChargesSheetRows_(chargesEntries);
   appendEmailQueueSheetData_(emailQueueEntries);
+  SpreadsheetApp.flush();
 }
+
+function getSubjectAndMessageFromEmailQueueEntry_(
+  entry: EmailQueueSheetObject
+) {
+  const { currentAmount, date, email, grandTotal, name, previousBalance } =
+    entry;
+  const {
+    companyCountry,
+    companyName,
+    companyPostalCode,
+    companyProvince,
+    companyStreet,
+    companyTown,
+  } = getConfigValues_();
+  const formattedDate = getDateFormatter_()(date);
+  const [
+    formattedCurrentAmount,
+    formattedPreviousBalance,
+    formattedGrandTotal,
+  ] = [currentAmount, previousBalance, grandTotal].map(getMoneyFormatter_());
+  const mustacheMapping = {
+    companyName,
+    companyCountry,
+    companyPostalCode,
+    companyProvince,
+    companyStreet,
+    companyTown,
+    name,
+    email,
+    date: formattedDate,
+    currentAmount: formattedCurrentAmount,
+    previousBalance: formattedPreviousBalance,
+    grandTotal: formattedGrandTotal,
+  };
+  return {
+    subject: mustache(defaultEmailSubject, mustacheMapping),
+    message: mustache(defaultEmailMessage, mustacheMapping),
+  };
+}
+
 function sendEmails() {
   const emailQueue = getEmailQueueObjects_();
-  console.log({ emailQueue });
+  emailQueue.forEach((entry) => {
+    const { subject, message } =
+      getSubjectAndMessageFromEmailQueueEntry_(entry);
+    const file = DriveApp.getFileById(entry.fileId).getBlob();
+    GmailApp.createDraft(entry.email, subject, message, {
+      attachments: [file],
+    });
+  });
 }
 
 export function sendBills() {

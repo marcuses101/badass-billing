@@ -10,3 +10,4 @@ export * from "./equalizeTwoDimensionalArray";
 export * from "./generateBillArray";
 export * from "./roundToTwoDecimalPlaces";
 export * from "./useInvoiceId";
+export * from "./mustache";
