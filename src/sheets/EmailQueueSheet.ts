@@ -26,11 +26,11 @@ export const emailQueueSheetConfig: SheetConfig = {
   hidden: true,
 };
 
-export function getEmailQueueObjects() {
+export function getEmailQueueObjects_() {
   return getSheetData_<EmailQueueSheetObject>(emailQueueSheetConfig.name);
 }
 
-export function appendEmailQueueSheetData(data: EmailQueueSheetObject[]) {
+export function appendEmailQueueSheetData_(data: EmailQueueSheetObject[]) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
     emailQueueSheetConfig.name
   );

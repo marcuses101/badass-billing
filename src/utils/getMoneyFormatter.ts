@@ -1,4 +1,4 @@
-export function getMoneyFormatter() {
+export function getMoneyFormatter_() {
   return new Intl.NumberFormat("en-CA", {
     style: "currency",
     currency: "CAD",

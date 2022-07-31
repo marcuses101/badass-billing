@@ -1,6 +1,6 @@
 import { INVOICE_ID_KEY } from "appConfig";
 
-export function useInvoiceId() {
+export function useInvoiceId_() {
   function getInvoiceId() {
     const value =
       PropertiesService.getDocumentProperties().getProperty(INVOICE_ID_KEY);

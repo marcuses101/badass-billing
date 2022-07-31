@@ -4,15 +4,16 @@ import {
 } from "sheets/ChargesSheet";
 import { getConfigValues_ } from "sheets/ConfigSheet";
 import {
-  appendEmailQueueSheetData,
+  appendEmailQueueSheetData_,
   EmailQueueSheetObject,
+  getEmailQueueObjects_,
 } from "sheets/EmailQueueSheet";
 // import { extraLogSheetConfig } from "sheets/ExtraLogSheet";
 // import { lessonLogSheetConfig } from "sheets/LessonLogSheet";
-import { useInvoiceId } from "utils";
+import { useInvoiceId_ } from "utils";
 import { buildBillArray_ } from "utils/generateBillArray";
-import { getStudentSummaryMap } from "utils/getStudentSummaryMap";
-import { setBillSheetConditionalFormatting } from "utils/setBillSheetConditionalFormatting";
+import { getStudentSummaryMap_ } from "utils/getStudentSummaryMap";
+import { setBillSheetConditionalFormatting_ } from "utils/setBillSheetConditionalFormatting";
 
 // function clearLogSheets_() {
 //   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
@@ -36,16 +37,16 @@ export function generatePDFs() {
   const currentDate = today.toISOString().split("T")[0];
   const billsFolderForToday = billsFolder.createFolder(currentDate);
 
-  setBillSheetConditionalFormatting(exportSheet);
+  setBillSheetConditionalFormatting_(exportSheet);
   exportSheet.setHiddenGridlines(true);
 
-  const studentSummaryMap = getStudentSummaryMap();
+  const studentSummaryMap = getStudentSummaryMap_();
 
   const emailQueueEntries: EmailQueueSheetObject[] = [];
   const chargesEntries: IChargeSheetEntryObject[] = [];
   Object.values(studentSummaryMap).forEach((studentSummaryEntry) => {
     if (studentSummaryEntry.subTotal() === 0) return;
-    const { getInvoiceId, incrementInvoiceId } = useInvoiceId();
+    const { getInvoiceId, incrementInvoiceId } = useInvoiceId_();
     const billArray = buildBillArray_(studentSummaryEntry);
     exportSheet.clearContents();
     exportSheet
@@ -88,9 +89,14 @@ export function generatePDFs() {
     });
   });
   appendChargesSheetRows_(chargesEntries);
-  appendEmailQueueSheetData(emailQueueEntries);
+  appendEmailQueueSheetData_(emailQueueEntries);
+}
+function sendEmails() {
+  const emailQueue = getEmailQueueObjects_();
+  console.log({ emailQueue });
 }
 
 export function sendBills() {
   generatePDFs();
+  sendEmails();
 }

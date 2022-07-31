@@ -1,4 +1,4 @@
-export function setBillSheetConditionalFormatting(
+export function setBillSheetConditionalFormatting_(
   sheet: GoogleAppsScript.Spreadsheet.Sheet
 ) {
   const billFormatting = SpreadsheetApp.newConditionalFormatRule();

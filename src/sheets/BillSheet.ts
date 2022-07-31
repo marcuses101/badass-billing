@@ -1,7 +1,7 @@
 import { SheetConfig } from "sheetsConfig";
 import { getStudentValidation_ } from "utils";
 import { generateBillArray_ } from "utils/generateBillArray";
-import { setBillSheetConditionalFormatting } from "utils/setBillSheetConditionalFormatting";
+import { setBillSheetConditionalFormatting_ } from "utils/setBillSheetConditionalFormatting";
 
 export function generateBill(studentName: string) {
   if (!studentName) return "No Student Selected";
@@ -19,7 +19,7 @@ export const billSheetConfig: SheetConfig = {
       .setVerticalAlignment("top")
       .setHorizontalAlignment("left");
 
-    setBillSheetConditionalFormatting(sheet);
+    setBillSheetConditionalFormatting_(sheet);
   },
   alternateColors: false,
   hidden: false,

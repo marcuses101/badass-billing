@@ -1,12 +1,12 @@
 import { SheetConfig } from "sheetsConfig";
-import { getStudentSummaryMap } from "../utils/getStudentSummaryMap";
+import { getStudentSummaryMap_ } from "../utils/getStudentSummaryMap";
 import { chargesSheetConfig } from "./ChargesSheet";
 import { extraLogSheetConfig } from "./ExtraLogSheet";
 import { lessonDataSheetConfig } from "./LessonDataSheet";
 import { paymentLogSheetConfig } from "./PaymentLogSheet";
 
 export function generateSummary() {
-  const studentMap = getStudentSummaryMap();
+  const studentMap = getStudentSummaryMap_();
 
   return Object.values(studentMap).map((student) => [
     student.name,

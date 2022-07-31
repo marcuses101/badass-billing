@@ -59,6 +59,6 @@ export const studentInfoSheetConfig: SheetConfig = {
   alternateColors: true,
 };
 
-export function getStudentInfoObjects() {
+export function getStudentInfoObjects_() {
   return getSheetData_<StudentInfoObject>(studentInfoSheetConfig.name);
 }

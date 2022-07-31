@@ -1,5 +1,5 @@
 import { getConfigValues_ } from "sheets/ConfigSheet";
-import { getStudentInfoObjects } from "sheets/StudentInfoSheet";
+import { getStudentInfoObjects_ } from "sheets/StudentInfoSheet";
 import {
   getChargesSheetEntryObjects_,
   IChargeSheetEntryObject,
@@ -16,7 +16,7 @@ import {
   getPaymentLogSheetObjects_,
   IPaymentLogSheetObject,
 } from "../sheets/PaymentLogSheet";
-import { roundToTwoDecimalPlaces } from "./roundToTwoDecimalPlaces";
+import { roundToTwoDecimalPlaces_ } from "./roundToTwoDecimalPlaces";
 
 export type StudentSummaryEntry = {
   name: string;
@@ -40,8 +40,8 @@ export type StudentSummaryEntry = {
 
 export type StudentSummaryMap = Record<string, StudentSummaryEntry>;
 
-export function getStudentSummaryMap() {
-  const students = getStudentInfoObjects().filter(({ isActive }) => isActive);
+export function getStudentSummaryMap_() {
+  const students = getStudentInfoObjects_().filter(({ isActive }) => isActive);
   const { taxRate } = getConfigValues_();
   const studentsMap: StudentSummaryMap = students.reduce(
     (map, { address, email, fullName, telephone }) => ({
@@ -61,21 +61,21 @@ export function getStudentSummaryMap() {
               acc + current.lessonAmountPerStudent,
             0
           );
-          return roundToTwoDecimalPlaces(total);
+          return roundToTwoDecimalPlaces_(total);
         },
         extrasTotal() {
           const total = this.extras.reduce(
             (acc, current: IExtraLogSheetObject) => acc + current.amount,
             0
           );
-          return roundToTwoDecimalPlaces(total);
+          return roundToTwoDecimalPlaces_(total);
         },
         paymentsTotal() {
           const total = this.payments.reduce(
             (acc, current: IPaymentLogSheetObject) => acc + current.amount,
             0
           );
-          return roundToTwoDecimalPlaces(total);
+          return roundToTwoDecimalPlaces_(total);
         },
         chargesTotal() {
           const total = this.charges.reduce(
@@ -83,13 +83,13 @@ export function getStudentSummaryMap() {
               acc + current.amount,
             0
           );
-          return roundToTwoDecimalPlaces(total);
+          return roundToTwoDecimalPlaces_(total);
         },
         subTotal() {
           return this.lessonsTotal() + this.extrasTotal();
         },
         taxes() {
-          return roundToTwoDecimalPlaces(this.subTotal() * taxRate);
+          return roundToTwoDecimalPlaces_(this.subTotal() * taxRate);
         },
         subTotalWithTaxes() {
           return this.subTotal() + this.taxes();

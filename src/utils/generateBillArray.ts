@@ -1,9 +1,9 @@
 import { getConfigValues_ } from "sheets/ConfigSheet";
-import { getStudentSummaryEntry } from "./getStudentSummaryEntry";
+import { getStudentSummaryEntry_ } from "./getStudentSummaryEntry";
 import { equalizeTwoDimensionalArray_ } from "./equalizeTwoDimensionalArray";
 import { StudentSummaryEntry, StudentSummaryMap } from "./getStudentSummaryMap";
-import { getMoneyFormatter } from "./getMoneyFormatter";
-import { useInvoiceId } from "./useInvoiceId";
+import { getMoneyFormatter_ } from "./getMoneyFormatter";
+import { useInvoiceId_ } from "./useInvoiceId";
 
 function getLessonDescription_(minutes: number, numberOfStudents: number) {
   return numberOfStudents > 1
@@ -12,7 +12,7 @@ function getLessonDescription_(minutes: number, numberOfStudents: number) {
 }
 
 export function buildBillArray_(student: StudentSummaryEntry) {
-  const moneyFormatter = getMoneyFormatter();
+  const moneyFormatter = getMoneyFormatter_();
   const dateFormatter = new Intl.DateTimeFormat("en-CA", {
     dateStyle: "short",
   }).format;
@@ -36,7 +36,7 @@ export function buildBillArray_(student: StudentSummaryEntry) {
       return [dateFormatter(date), description, "", "", moneyFormatter(amount)];
     });
   const { name, address } = student;
-  const invoiceNumberId = useInvoiceId().getInvoiceId();
+  const invoiceNumberId = useInvoiceId_().getInvoiceId();
   const {
     companyName,
     companyPostalCode,
@@ -74,7 +74,7 @@ export function generateBillArray_(
   studentName: string,
   studentSummaryMap?: StudentSummaryMap
 ) {
-  const student = getStudentSummaryEntry(studentName, studentSummaryMap);
+  const student = getStudentSummaryEntry_(studentName, studentSummaryMap);
 
   if (!student) throw new Error(`${studentName} not found`);
 
