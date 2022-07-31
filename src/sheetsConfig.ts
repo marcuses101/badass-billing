@@ -1,7 +1,9 @@
+import { activeStudentsSheetConfig } from "sheets/ActiveStudentsSheet";
 import { billSheetConfig } from "sheets/BillSheet";
 import { chargesSheetConfig } from "sheets/ChargesSheet";
 import { configSheetConfig } from "sheets/ConfigSheet";
 import { emailQueueSheetConfig } from "sheets/EmailQueueSheet";
+import { emailTemplateSheetConfig } from "sheets/EmailTemplateSheet";
 import { extraLogSheetConfig } from "sheets/ExtraLogSheet";
 import { lessonDataSheetConfig } from "sheets/LessonDataSheet";
 import { lessonLogSheetConfig } from "sheets/LessonLogSheet";
@@ -29,15 +31,18 @@ export const sheets = [
   "Student Info",
   "Summary",
   "Bill",
+  "Email Template",
   "Lesson Data",
   "Email Queue",
   "Charges",
   "Config",
+  "Active Students",
 ] as const;
 
 export const sheetConfigs: SheetConfig[] = [
   configSheetConfig,
   studentInfoSheetConfig,
+  activeStudentsSheetConfig,
   lessonLogSheetConfig,
   lessonDataSheetConfig,
   extraLogSheetConfig,
@@ -46,4 +51,5 @@ export const sheetConfigs: SheetConfig[] = [
   chargesSheetConfig,
   summarySheetConfig,
   emailQueueSheetConfig,
+  emailTemplateSheetConfig,
 ];

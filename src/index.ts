@@ -1,6 +1,6 @@
 import { initialize, initializeWithData } from "scripts/init";
 import { onOpen } from "ui";
-import { generatePDFs, sendBills } from "scripts/sendBills";
+import { populateEmailQueue_, sendBills } from "scripts/sendBills";
 import { deleteSheets } from "scripts/deleteSheets";
 
 // AS THIS IS THE ENTRY POINT FOR ESBUILD. ANY FUNCTION EXPOSED IN THE APPLICATION SCRIPT SHOULD BE INCLUDED HERE
@@ -13,6 +13,6 @@ function placeholder_() {
     deleteSheets,
     initializeWithData,
     sendBills,
-    generatePDFs,
+    populateEmailQueue_,
   ];
 }

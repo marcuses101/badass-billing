@@ -52,7 +52,7 @@ export function buildBillArray_(student: StudentSummaryEntry) {
     [`${companyTown}, ${companyProvince}`],
     [companyPostalCode],
     [],
-    ["Bill To"],
+    ["Bill To:"],
     [name],
     [address],
     [],

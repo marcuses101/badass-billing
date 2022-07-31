@@ -3,6 +3,7 @@ import { getBooleanValidation_, getSheetData_ } from "utils";
 
 function studentInfoFixtures_(): [
   fullName: string,
+  parentName: string,
   email: string,
   telephone: string,
   address: string,
@@ -11,6 +12,7 @@ function studentInfoFixtures_(): [
   return [
     [
       "Marcus Connolly",
+      "Maxine Connolly",
       "mnjconnolly@gmail.com",
       "555-555-5555",
       "555 Testing Ave. Montreal, QC, CA, z8z 2x8",
@@ -18,21 +20,24 @@ function studentInfoFixtures_(): [
     ],
     [
       "Laurence Lessard",
-      "laurencelessard@gmail.com",
+      "Jose",
+      "mnjconnolly@gmail.com",
       "555-555-5555",
       "555 Testing Ave. Montreal, QC, CA, z8z 2x8",
       true,
     ],
     [
       "Mark Bardei",
-      "markymark@hotmail.com,karina_muscles@flexing.com",
+      "Big Mark",
+      "mnjconnolly@gmail.com",
       "555-555-5555",
       "555 Testing Ave. Montreal, QC, CA, z8z 2x8",
       true,
     ],
     [
       "James Connolly",
-      "yogoyou@gmail.com",
+      "Marcus Connolly",
+      "mnjconnolly@gmail.com",
       "555-555-5555",
       "555 Testing Ave. Montreal, QC, CA, z8z 2x8",
       true,
@@ -42,6 +47,7 @@ function studentInfoFixtures_(): [
 
 export interface StudentInfoObject {
   fullName: string;
+  parentName: string;
   email: string;
   telephone: string;
   address: string;
@@ -50,7 +56,14 @@ export interface StudentInfoObject {
 
 export const studentInfoSheetConfig: SheetConfig = {
   name: "Student Info",
-  headers: ["Full Name", "Email", "Telephone", "Address", "isActive"],
+  headers: [
+    "Full Name",
+    "Parent Name",
+    "Email",
+    "Telephone",
+    "Address",
+    "isActive",
+  ],
   setup: (sheet) => {
     const isActiveRange = sheet.getRange("E2:E");
     isActiveRange.setDataValidation(getBooleanValidation_());

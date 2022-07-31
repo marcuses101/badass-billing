@@ -41,6 +41,7 @@ export const summarySheetConfig: SheetConfig = {
           '${chargesSheetConfig.name}'!A2:Z
         )`
     );
+    sheet.getRange("B2:Z").setNumberFormat('"$"#,##0.00');
   },
   alternateColors: true,
 };

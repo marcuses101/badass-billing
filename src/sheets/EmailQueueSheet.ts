@@ -9,6 +9,8 @@ export interface EmailQueueSheetObject {
   previousBalance: number;
   grandTotal: number;
   fileId: string;
+  invoiceId: number;
+  invoiceLink: string;
 }
 
 export const emailQueueSheetConfig: SheetConfig = {
@@ -21,6 +23,8 @@ export const emailQueueSheetConfig: SheetConfig = {
     "Previous Balance",
     "Grand Total",
     "File Id",
+    "Invoice Id",
+    "Invoice Link",
   ],
   alternateColors: true,
   hidden: true,
@@ -28,6 +32,17 @@ export const emailQueueSheetConfig: SheetConfig = {
 
 export function getEmailQueueObjects_() {
   return getSheetData_<EmailQueueSheetObject>(emailQueueSheetConfig.name);
+}
+
+export function clearEmailQueue_() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
+    emailQueueSheetConfig.name
+  );
+  if (!sheet)
+    throw new Error(`Sheet "${emailQueueSheetConfig.name}" not found`);
+  sheet
+    .getRange(2, 1, sheet.getMaxRows(), sheet.getMaxColumns())
+    .clearContent();
 }
 
 export function appendEmailQueueSheetData_(data: EmailQueueSheetObject[]) {
@@ -46,6 +61,8 @@ export function appendEmailQueueSheetData_(data: EmailQueueSheetObject[]) {
       previousBalance,
       grandTotal,
       fileId,
+      invoiceId,
+      invoiceLink,
     }) => [
       name,
       date,
@@ -54,6 +71,8 @@ export function appendEmailQueueSheetData_(data: EmailQueueSheetObject[]) {
       previousBalance,
       grandTotal,
       fileId,
+      invoiceId,
+      invoiceLink,
     ]
   );
   const range = sheet.getRange(

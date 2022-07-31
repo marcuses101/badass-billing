@@ -1,8 +1,8 @@
-import { studentInfoSheetConfig } from "sheets/StudentInfoSheet";
+import { activeStudentsSheetConfig } from "sheets/ActiveStudentsSheet";
 
-export function getStudentValidation_() {
+export function getActiveStudentValidation_() {
   const fullNameRange = SpreadsheetApp.getActiveSpreadsheet().getRange(
-    `'${studentInfoSheetConfig.name}'!$A2:$A`
+    `'${activeStudentsSheetConfig.name}'!$A2:$A`
   );
   return SpreadsheetApp.newDataValidation()
     .setAllowInvalid(false)

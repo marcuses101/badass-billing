@@ -1,9 +1,6 @@
 import { SheetConfig } from "sheetsConfig";
-import {
-  getDateValidation_,
-  getNumberValidation_,
-  getStudentValidation_,
-} from "utils";
+import { getDateValidation_, getNumberValidation_ } from "utils";
+import { getActiveStudentValidation_ } from "utils/getActiveStudentValidation";
 
 function lessonLogFixtures_(): [
   date: string,
@@ -22,7 +19,7 @@ export const lessonLogSheetConfig: SheetConfig = {
   setup: (sheet) => {
     sheet.getRange("A2:A").setDataValidation(getDateValidation_());
     sheet.getRange("B2:B").setDataValidation(getNumberValidation_());
-    sheet.getRange("C2:Z").setDataValidation(getStudentValidation_());
+    sheet.getRange("C2:Z").setDataValidation(getActiveStudentValidation_());
   },
   fixtures: lessonLogFixtures_(),
   alternateColors: true,
