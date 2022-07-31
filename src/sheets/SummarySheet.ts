@@ -1,5 +1,9 @@
 import { SheetConfig } from "sheetsConfig";
 import { getStudentSummaryMap } from "../utils/getStudentSummaryMap";
+import { chargesSheetConfig } from "./ChargesSheet";
+import { extraLogSheetConfig } from "./ExtraLogSheet";
+import { lessonDataSheetConfig } from "./LessonDataSheet";
+import { paymentLogSheetConfig } from "./PaymentLogSheet";
 
 export function generateSummary() {
   const studentMap = getStudentSummaryMap();
@@ -29,11 +33,14 @@ export const summarySheetConfig: SheetConfig = {
     "Grand Total",
   ],
   setup: (sheet) => {
-    sheet
-      .getRange("A2")
-      .setFormula(
-        `=${generateSummary.name}('Lesson Data'!A2:Z, 'Extra Log'!A2:Z, 'Payment Log'!A2:Z,)`
-      );
+    sheet.getRange("A2").setFormula(
+      `=${generateSummary.name}(
+          '${lessonDataSheetConfig.name}'!A2:Z,
+          '${extraLogSheetConfig.name}'!A2:Z,
+          '${paymentLogSheetConfig.name}'!A2:Z,
+          '${chargesSheetConfig.name}'!A2:Z
+        )`
+    );
   },
   alternateColors: true,
 };

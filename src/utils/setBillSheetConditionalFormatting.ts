@@ -11,6 +11,8 @@ export function setBillSheetConditionalFormatting(
     "Previous Balance",
     "Grand Total",
     "Amount",
+    "Taxes",
+    "Bill To",
   ];
   const regexString = matchList.join("|");
   billFormatting

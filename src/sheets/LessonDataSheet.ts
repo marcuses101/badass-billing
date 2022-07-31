@@ -1,5 +1,6 @@
 import { SheetConfig } from "sheetsConfig";
-import { getConfigValues_, getSheetData_ } from "utils";
+import { getSheetData_ } from "utils";
+import { getConfigValues_ } from "./ConfigSheet";
 
 export type LessonDataEntry = [
   lessonId: string,
@@ -24,11 +25,7 @@ export function ProcessLessonLog(
   data: LessonLogEntry[],
   configData: [key: string, value: string | number][]
 ) {
-  const config = getConfigValues_(configData);
-  if (!config) {
-    throw new Error("Error getting config values");
-  }
-  const { groupRate, soloRate } = config;
+  const { groupRate, soloRate } = getConfigValues_(configData);
 
   if (!groupRate || !soloRate) {
     throw new Error(
@@ -60,10 +57,6 @@ export function ProcessLessonLog(
   return lessonData;
 }
 
-export function getLessonDataSheetObjects_() {
-  return getSheetData_<ILessonDataEntry>("Lesson Data");
-}
-
 export const lessonDataSheetConfig: SheetConfig = {
   name: "Lesson Data",
   headers: [
@@ -83,5 +76,9 @@ export const lessonDataSheetConfig: SheetConfig = {
   hidden: true,
   alternateColors: true,
 };
+
+export function getLessonDataSheetObjects_() {
+  return getSheetData_<ILessonDataEntry>(lessonDataSheetConfig.name);
+}
 
 type LessonLogEntry = [date: Date, minutes: number, ...students: string[]];

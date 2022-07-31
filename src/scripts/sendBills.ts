@@ -1,69 +1,57 @@
-import { emailQueueSheetConfig } from "sheets/EmailQueueSheet";
-import { extraLogSheetConfig } from "sheets/ExtraLogSheet";
-import { lessonLogSheetConfig } from "sheets/LessonLogSheet";
-import { getConfigValues_ } from "utils";
+import {
+  appendChargesSheetRows_,
+  IChargeSheetEntryObject,
+} from "sheets/ChargesSheet";
+import { getConfigValues_ } from "sheets/ConfigSheet";
+import {
+  appendEmailQueueSheetData,
+  EmailQueueSheetObject,
+} from "sheets/EmailQueueSheet";
+// import { extraLogSheetConfig } from "sheets/ExtraLogSheet";
+// import { lessonLogSheetConfig } from "sheets/LessonLogSheet";
+import { useInvoiceId } from "utils";
 import { buildBillArray_ } from "utils/generateBillArray";
 import { getStudentSummaryMap } from "utils/getStudentSummaryMap";
 import { setBillSheetConditionalFormatting } from "utils/setBillSheetConditionalFormatting";
 
-function clearLogSheets_() {
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  spreadsheet
-    .getSheetByName(lessonLogSheetConfig.name)
-    ?.getRange("A2:Z")
-    .clearContent();
-  spreadsheet
-    .getSheetByName(extraLogSheetConfig.name)
-    ?.getRange("A2:Z")
-    .clearContent();
-}
-
-export function populateEmailQueue() {
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  const students = getStudentSummaryMap();
-  const entries = Object.values(students)
-    .filter(({ lessons, extras }) => lessons.length || extras.length)
-    .map((student) => [
-      JSON.stringify({
-        lessons: student.lessons,
-        extras: student.extras,
-        subTotal: student.subTotal(),
-        previousBalance: student.previousBalance(),
-        grandTotal: student.grandTotal(),
-        name: student.name,
-      }),
-    ]);
-  const emailQueueSheet = spreadsheet.getSheetByName(
-    emailQueueSheetConfig.name
-  );
-  if (!emailQueueSheet) {
-    throw Error('"Email Queue" sheet not properly configured');
-  }
-  emailQueueSheet
-    .getRange(emailQueueSheet.getLastRow() + 1, 1, entries.length, 1)
-    .setValues(entries);
-}
+// function clearLogSheets_() {
+//   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+//   spreadsheet
+//     .getSheetByName(lessonLogSheetConfig.name)
+//     ?.getRange("A2:Z")
+//     .clearContent();
+//   spreadsheet
+//     .getSheetByName(extraLogSheetConfig.name)
+//     ?.getRange("A2:Z")
+//     .clearContent();
+// }
 
 export function generatePDFs() {
-  const config = getConfigValues_();
-  if (!config) return;
-  const currentDate = new Date().toISOString().split("T")[0];
-  const { billsFolderId, exportId } = config;
+  const { billsFolderId, exportId } = getConfigValues_();
   const billsFolder = DriveApp.getFolderById(billsFolderId);
-  const billsFolderForToday = billsFolder.createFolder(currentDate);
   const exportSpreadsheet = SpreadsheetApp.openById(exportId);
   const exportSheet = exportSpreadsheet.getSheets()[0];
+
+  const today = new Date();
+  const currentDate = today.toISOString().split("T")[0];
+  const billsFolderForToday = billsFolder.createFolder(currentDate);
+
   setBillSheetConditionalFormatting(exportSheet);
   exportSheet.setHiddenGridlines(true);
+
   const studentSummaryMap = getStudentSummaryMap();
-  const emailQueueEntries: string[] = [];
+
+  const emailQueueEntries: EmailQueueSheetObject[] = [];
+  const chargesEntries: IChargeSheetEntryObject[] = [];
   Object.values(studentSummaryMap).forEach((studentSummaryEntry) => {
     if (studentSummaryEntry.subTotal() === 0) return;
+    const { getInvoiceId, incrementInvoiceId } = useInvoiceId();
     const billArray = buildBillArray_(studentSummaryEntry);
     exportSheet.clearContents();
     exportSheet
       .getRange(1, 1, billArray.length, billArray[0].length)
       .setValues(billArray)
+      .setNumberFormat("@")
       .setWrap(false)
       .setVerticalAlignment("top")
       .setHorizontalAlignment("left");
@@ -77,19 +65,32 @@ export function generatePDFs() {
         `${studentSummaryEntry.name.replace(" ", "")}-${currentDate}.pdf`
       );
     const file = billsFolderForToday.createFile(pdfFile);
-    const billId = file.getId();
-    emailQueueEntries.push(JSON.stringify({ ...studentSummaryEntry, billId }));
+    const pdfFileId = file.getId();
+    const invoiceLink = file.getUrl();
+    const invoiceId = getInvoiceId();
+    chargesEntries.push({
+      date: today,
+      studentName: studentSummaryEntry.name,
+      amount: studentSummaryEntry.subTotalWithTaxes(),
+      invoiceId,
+      invoiceLink,
+    });
+    incrementInvoiceId();
+    const { name, email } = studentSummaryEntry;
+    emailQueueEntries.push({
+      date: today,
+      name,
+      email,
+      fileId: pdfFileId,
+      currentAmount: studentSummaryEntry.subTotalWithTaxes(),
+      previousBalance: studentSummaryEntry.previousBalance(),
+      grandTotal: studentSummaryEntry.grandTotal(),
+    });
   });
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  const emailQueueSheet = spreadsheet.getSheetByName(
-    emailQueueSheetConfig.name
-  );
-  emailQueueSheet
-    ?.getRange(emailQueueSheet.getLastRow() + 1, 1, emailQueueEntries.length, 1)
-    .setValues(emailQueueEntries.map((json) => [json]));
+  appendChargesSheetRows_(chargesEntries);
+  appendEmailQueueSheetData(emailQueueEntries);
 }
 
 export function sendBills() {
-  populateEmailQueue();
-  clearLogSheets_();
+  generatePDFs();
 }

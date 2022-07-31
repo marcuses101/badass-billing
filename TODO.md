@@ -5,6 +5,7 @@
 - Taxes?
   - BC Sales tax rate GST 5%
 - Income tracking
+- Bill Id System
 - Email Queue
   - Properties Service?
   - Verify Email addresses (or highlight invalid email)

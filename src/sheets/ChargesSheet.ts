@@ -10,16 +10,13 @@ export interface IChargeSheetEntryObject {
   date: Date;
   studentName: string;
   amount: number;
-  description: string;
-}
-
-export function getChargesSheetEntryObjects_() {
-  return getSheetData_<IChargeSheetEntryObject>("Charges");
+  invoiceId: number;
+  invoiceLink: string;
 }
 
 export const chargesSheetConfig: SheetConfig = {
   name: "Charges",
-  headers: ["Date", "Student Name", "Amount"],
+  headers: ["Date", "Student Name", "Amount", "Invoice Id", "Invoice Link"],
   setup: (sheet) => {
     sheet.getRange("A2:A").setDataValidation(getDateValidation_());
     sheet.getRange("B2:B").setDataValidation(getStudentValidation_());
@@ -28,3 +25,28 @@ export const chargesSheetConfig: SheetConfig = {
   alternateColors: true,
   hidden: true,
 };
+export function getChargesSheetEntryObjects_() {
+  return getSheetData_<IChargeSheetEntryObject>(chargesSheetConfig.name);
+}
+
+export function appendChargesSheetRows_(data: IChargeSheetEntryObject[]) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
+    chargesSheetConfig.name
+  );
+  if (!sheet) {
+    throw new Error(`sheet ${chargesSheetConfig.name} does not exist`);
+  }
+  const rows = data.map(
+    ({ date, studentName, amount, invoiceId, invoiceLink }) => [
+      date,
+      studentName,
+      amount,
+      invoiceId,
+      invoiceLink,
+    ]
+  );
+  if (rows.length === 0) return;
+  sheet
+    .getRange(sheet.getLastRow() + 1, 1, rows.length, rows[0].length)
+    .setValues(rows);
+}

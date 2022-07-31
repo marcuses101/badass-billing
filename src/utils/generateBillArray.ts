@@ -1,8 +1,9 @@
+import { getConfigValues_ } from "sheets/ConfigSheet";
 import { getStudentSummaryEntry } from "./getStudentSummaryEntry";
 import { equalizeTwoDimensionalArray_ } from "./equalizeTwoDimensionalArray";
 import { StudentSummaryEntry, StudentSummaryMap } from "./getStudentSummaryMap";
 import { getMoneyFormatter } from "./getMoneyFormatter";
-import { getConfigValues_ } from "./getConfigValues";
+import { useInvoiceId } from "./useInvoiceId";
 
 function getLessonDescription_(minutes: number, numberOfStudents: number) {
   return numberOfStudents > 1
@@ -12,6 +13,9 @@ function getLessonDescription_(minutes: number, numberOfStudents: number) {
 
 export function buildBillArray_(student: StudentSummaryEntry) {
   const moneyFormatter = getMoneyFormatter();
+  const dateFormatter = new Intl.DateTimeFormat("en-CA", {
+    dateStyle: "short",
+  }).format;
   const sortedLessonsAndExtraEntries = [...student.lessons, ...student.extras]
     .sort((a, b) => a.date.getTime() - b.date.getTime())
     .map((entry) => {
@@ -21,7 +25,7 @@ export function buildBillArray_(student: StudentSummaryEntry) {
 
         const description = getLessonDescription_(minutes, numberOfStudents);
         return [
-          date,
+          dateFormatter(date),
           description,
           "",
           "",
@@ -29,14 +33,28 @@ export function buildBillArray_(student: StudentSummaryEntry) {
         ];
       }
       const { date, description, amount } = entry;
-      return [date, description, "", "", moneyFormatter(amount)];
+      return [dateFormatter(date), description, "", "", moneyFormatter(amount)];
     });
+  const { name, address } = student;
+  const invoiceNumberId = useInvoiceId().getInvoiceId();
+  const {
+    companyName,
+    companyPostalCode,
+    companyProvince,
+    companyStreet,
+    companyTown,
+  } = getConfigValues_();
+
   const { taxRate } = getConfigValues_();
   const returnArray = equalizeTwoDimensionalArray_([
-    ["", "", "", "Name", student.name],
-    ["", "", "", "Date:", new Date()],
-    ["", "", "", "Invoice #:", Utilities.getUuid().slice(0, 5)],
+    [companyName, "", "", "Date:", dateFormatter(new Date())],
+    [companyStreet, "", "", "Invoice ID:", invoiceNumberId],
+    [`${companyTown}, ${companyProvince}`],
+    [companyPostalCode],
     [],
+    ["Bill To"],
+    [name],
+    [address],
     [],
     ["Date", "Description", "", "", "Amount"],
     [],
@@ -44,8 +62,9 @@ export function buildBillArray_(student: StudentSummaryEntry) {
     [],
     [],
     ["", "", "Sub Total", "", moneyFormatter(student.subTotal())],
-    ["", "", "", `Taxes ${taxRate * 100}%`, student.taxes()],
+    ["", "", `Taxes ${taxRate * 100}%`, "", moneyFormatter(student.taxes())],
     ["", "", "Previous Balance", "", moneyFormatter(student.previousBalance())],
+    [],
     ["", "", "Grand Total", "", moneyFormatter(student.grandTotal())],
   ]);
   return returnArray;

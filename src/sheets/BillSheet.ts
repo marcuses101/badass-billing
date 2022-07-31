@@ -4,6 +4,7 @@ import { generateBillArray_ } from "utils/generateBillArray";
 import { setBillSheetConditionalFormatting } from "utils/setBillSheetConditionalFormatting";
 
 export function generateBill(studentName: string) {
+  if (!studentName) return "No Student Selected";
   return generateBillArray_(studentName);
 }
 
@@ -15,7 +16,9 @@ export const billSheetConfig: SheetConfig = {
     sheet.getRange("A3").setFormula(`=${generateBill.name}(B1)`);
     sheet
       .getRange(sheet.getMaxRows(), sheet.getMaxColumns())
-      .setHorizontalAlignment("right");
+      .setVerticalAlignment("top")
+      .setHorizontalAlignment("left");
+
     setBillSheetConditionalFormatting(sheet);
   },
   alternateColors: false,

@@ -1,3 +1,5 @@
+import { getConfigValues_ } from "sheets/ConfigSheet";
+import { getStudentInfoObjects } from "sheets/StudentInfoSheet";
 import {
   getChargesSheetEntryObjects_,
   IChargeSheetEntryObject,
@@ -14,12 +16,13 @@ import {
   getPaymentLogSheetObjects_,
   IPaymentLogSheetObject,
 } from "../sheets/PaymentLogSheet";
-import { getActiveStudents_ } from "./getActiveStudents";
-import { getConfigValues_ } from "./getConfigValues";
 import { roundToTwoDecimalPlaces } from "./roundToTwoDecimalPlaces";
 
 export type StudentSummaryEntry = {
   name: string;
+  email: string;
+  telephone?: string;
+  address: string;
   lessons: ILessonDataEntry[];
   extras: IExtraLogSheetObject[];
   payments: IPaymentLogSheetObject[];
@@ -28,6 +31,7 @@ export type StudentSummaryEntry = {
   lessonsTotal: () => number;
   extrasTotal: () => number;
   subTotal: () => number;
+  subTotalWithTaxes: () => number;
   paymentsTotal: () => number;
   chargesTotal: () => number;
   previousBalance: () => number;
@@ -37,54 +41,64 @@ export type StudentSummaryEntry = {
 export type StudentSummaryMap = Record<string, StudentSummaryEntry>;
 
 export function getStudentSummaryMap() {
-  const studentsArray: string[] = getActiveStudents_();
+  const students = getStudentInfoObjects().filter(({ isActive }) => isActive);
   const { taxRate } = getConfigValues_();
-  const studentsMap: StudentSummaryMap = studentsArray.reduce(
-    (map, studentName) => ({
+  const studentsMap: StudentSummaryMap = students.reduce(
+    (map, { address, email, fullName, telephone }) => ({
       ...map,
-      [studentName]: {
-        name: studentName,
+      [fullName]: {
+        name: fullName,
+        email,
+        telephone,
+        address,
         lessons: [],
         extras: [],
         payments: [],
         charges: [],
         lessonsTotal() {
-          return this.lessons.reduce(
+          const total = this.lessons.reduce(
             (acc, current: ILessonDataEntry) =>
               acc + current.lessonAmountPerStudent,
             0
           );
+          return roundToTwoDecimalPlaces(total);
         },
         extrasTotal() {
-          return this.extras.reduce(
+          const total = this.extras.reduce(
             (acc, current: IExtraLogSheetObject) => acc + current.amount,
             0
           );
-        },
-        subTotal() {
-          return this.lessonsTotal() + this.extrasTotal();
+          return roundToTwoDecimalPlaces(total);
         },
         paymentsTotal() {
-          return this.payments.reduce(
+          const total = this.payments.reduce(
             (acc, current: IPaymentLogSheetObject) => acc + current.amount,
             0
           );
+          return roundToTwoDecimalPlaces(total);
         },
         chargesTotal() {
-          return this.charges.reduce(
+          const total = this.charges.reduce(
             (acc: number, current: IChargeSheetEntryObject) =>
               acc + current.amount,
             0
           );
+          return roundToTwoDecimalPlaces(total);
+        },
+        subTotal() {
+          return this.lessonsTotal() + this.extrasTotal();
         },
         taxes() {
           return roundToTwoDecimalPlaces(this.subTotal() * taxRate);
+        },
+        subTotalWithTaxes() {
+          return this.subTotal() + this.taxes();
         },
         previousBalance() {
           return this.chargesTotal() - this.paymentsTotal();
         },
         grandTotal() {
-          return this.previousBalance() + this.subTotal();
+          return this.previousBalance() + this.subTotalWithTaxes();
         },
       },
     }),

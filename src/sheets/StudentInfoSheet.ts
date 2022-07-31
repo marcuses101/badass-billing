@@ -1,5 +1,5 @@
 import { SheetConfig } from "sheetsConfig";
-import { getBooleanValidation_ } from "utils";
+import { getBooleanValidation_, getSheetData_ } from "utils";
 
 function studentInfoFixtures_(): [
   fullName: string,
@@ -58,3 +58,7 @@ export const studentInfoSheetConfig: SheetConfig = {
   fixtures: studentInfoFixtures_(),
   alternateColors: true,
 };
+
+export function getStudentInfoObjects() {
+  return getSheetData_<StudentInfoObject>(studentInfoSheetConfig.name);
+}
