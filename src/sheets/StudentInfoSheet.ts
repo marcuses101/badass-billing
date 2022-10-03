@@ -62,7 +62,7 @@ export const studentInfoSheetConfig: SheetConfig = {
     "Email",
     "Telephone",
     "Address",
-    "isActive",
+    "Is Active",
   ],
   setup: (sheet) => {
     const isActiveRange = sheet.getRange("F2:F");
