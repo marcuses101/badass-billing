@@ -13,6 +13,7 @@ export function setBillSheetConditionalFormatting_(
     "Amount",
     "Taxes",
     "Bill To",
+    "GST",
   ];
   const regexString = matchList.join("|");
   billFormatting

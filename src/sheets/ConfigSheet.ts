@@ -54,6 +54,9 @@ export const configSheetConfig: SheetConfig = {
       ui
         .prompt("Please enter your company Postal Code (ex. '1A1 A1A')")
         .getResponseText() || "1A1 A1A";
+    const salesTaxNumber =
+      ui.prompt("Please enter your sales tax number").getResponseText() ||
+      "5lk31-23409dk";
     // Set up export sheet.
 
     let exportSpreadsheetId =
@@ -90,6 +93,7 @@ export const configSheetConfig: SheetConfig = {
       ["Company Province", companyProvince],
       ["Company Country", companyCountry],
       ["Company PostalCode", companyPostalCode],
+      ["Sales Tax Number", salesTaxNumber],
     ]);
 
     sheet.getRange(2, 1, configData.length, 2).setValues(configData);
@@ -110,6 +114,7 @@ type ConfigValues = {
   companyProvince: string;
   companyCountry: string;
   companyPostalCode: string;
+  salesTaxNumber: string;
 };
 
 export function getConfigValues_(

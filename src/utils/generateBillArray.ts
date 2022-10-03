@@ -43,6 +43,7 @@ export function buildBillArray_(student: StudentSummaryEntry) {
     companyProvince,
     companyStreet,
     companyTown,
+    salesTaxNumber,
   } = getConfigValues_();
 
   const { taxRate } = getConfigValues_();
@@ -62,7 +63,13 @@ export function buildBillArray_(student: StudentSummaryEntry) {
     [],
     [],
     ["", "", "Sub Total", "", moneyFormatter(student.subTotal())],
-    ["", "", `Taxes ${taxRate * 100}%`, "", moneyFormatter(student.taxes())],
+    [
+      "",
+      "",
+      `GST ${salesTaxNumber} ${taxRate * 100}%`,
+      "",
+      moneyFormatter(student.taxes()),
+    ],
     ["", "", "Previous Balance", "", moneyFormatter(student.previousBalance())],
     [],
     ["", "", "Grand Total", "", moneyFormatter(student.grandTotal())],
