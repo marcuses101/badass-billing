@@ -85,6 +85,12 @@ export function populateEmailQueue_() {
 }
 
 export function sendBills() {
+  const ui = SpreadsheetApp.getUi();
+  const response = ui.alert(
+    "Are you sure you want to send bills and start a new billing cycle?",
+    ui.ButtonSet.YES_NO
+  );
+  if (response !== ui.Button.YES) return;
   SpreadsheetApp.getActiveSpreadsheet().copy(
     `Billing ${getDateFormatter_()(new Date())}`
   );
