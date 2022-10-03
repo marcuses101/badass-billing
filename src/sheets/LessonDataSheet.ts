@@ -42,7 +42,8 @@ export function ProcessLessonLog(
     let totalLessonAmount =
       (minutes / 60) * (numberOfStudents === 1 ? soloRate : groupRate);
     // TODO decide rounding strategy
-    const studentAmount = Math.ceil(totalLessonAmount / numberOfStudents);
+    const studentAmount =
+      Math.round((totalLessonAmount / numberOfStudents) * 100) / 100;
     totalLessonAmount = studentAmount * numberOfStudents;
     return filteredStudents.map((name) => [
       lessonNumber,
