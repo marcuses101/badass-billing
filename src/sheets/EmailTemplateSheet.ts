@@ -19,7 +19,8 @@ export const emailTemplateSheetConfig: SheetConfig = {
   name: "Email Template",
   headers: ["Field", "Template", "Preview"],
   setup: (sheet) => {
-    const defaultEmailSubject = "Figure Skating Bill: {{name}} {{date}}";
+    const defaultEmailSubject =
+      "Figure Skating Bill: {{firstName}} {{lastName}} {{date}}";
     const defaultEmailMessage = `Hello,
 
 The balance of your account is {{grandTotal}}, including a previous balance of {{previousBalance}}.

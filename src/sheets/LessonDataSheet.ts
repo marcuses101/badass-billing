@@ -72,7 +72,9 @@ export const lessonDataSheetConfig: SheetConfig = {
   setup: (sheet) => {
     sheet
       .getRange("A2")
-      .setFormula(`=${ProcessLessonLog.name}('Lesson Log'!A2:Z, Config!A1:Z)`);
+      .setFormula(
+        `=${ProcessLessonLog.name}(INDIRECT("'Lesson Log'!A2:Z"), Config!A1:Z)`
+      );
   },
   hidden: true,
   alternateColors: true,
